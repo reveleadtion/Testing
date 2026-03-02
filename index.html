@@ -32,7 +32,7 @@
     .container { max-width: 900px; margin: 0 auto; }
 
     .brand-header { text-align: center; margin-bottom: 20px; }
-    .brand-logo { font-family: "Playfair Display", serif; font-size: clamp(28px, 7vw, 42px); font-weight: 400; color: var(--deep); margin-bottom: 4px; }
+    .brand-logo { font-family: "Playfair Display", serif; font-size: clamp(18px, 7vw, 22px); font-weight: 400; color: var(--deep); margin-bottom: 4px; }
     .brand-logo span { color: var(--gold); font-style: italic; }
     .brand-tagline { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
 
@@ -43,7 +43,7 @@
     .tagline-excerpt strong { color: var(--deep); }
 
     .intro-section { text-align: center; margin-bottom: 24px; }
-    .intro-title { font-family: "Playfair Display", serif; font-size: clamp(22px, 5vw, 28px); font-weight: 400; color: var(--deep); margin-bottom: 8px; }
+    .intro-title { font-family: "Playfair Display", serif; font-size: clamp(14px, 5vw, 20px); font-weight: 400; color: var(--deep); margin-bottom: 8px; }
     .intro-text { font-size: 14px; color: var(--text-light); line-height: 1.6; }
 
     .progress-bar { height: 3px; background: rgba(63,68,56,0.12); margin: 0 0 20px; border-radius: 2px; overflow: hidden; }
@@ -103,7 +103,49 @@
     .spinner { width: 40px; height: 40px; border: 4px solid rgba(124,138,90,0.2); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-
+    /* ── Package Recommendation Card ───────────────────────────────────────── */
+    .package-card {
+        border-radius: 10px; overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+        margin: 0 0 24px; background: white;
+        border: 1.5px solid var(--border);
+        animation: fadeIn 0.4s ease;
+    }
+    .package-card-header {
+        padding: 20px 22px 16px;
+        background: linear-gradient(120deg, var(--deep) 0%, #5a6147 100%);
+        color: white;
+        text-align: center;
+    }
+    .package-eyebrow {
+        font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
+        opacity: 0.7; margin-bottom: 8px;
+    }
+    .package-name {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(20px, 5vw, 26px);
+        font-weight: 400; font-style: italic;
+        margin-bottom: 6px; line-height: 1.2;
+    }
+    .package-tagline {
+        font-size: 11px; opacity: 0.75; letter-spacing: 0.6px;
+    }
+    .package-card-body { padding: 18px 22px; }
+    .package-reason {
+        font-size: 13px; color: var(--text-light); line-height: 1.7;
+        margin-bottom: 16px; text-align: center;
+    }
+    .package-features {
+        list-style: none; margin-bottom: 6px;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .package-features li {
+        font-size: 12.5px; color: var(--text);
+        display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+    }
+    .pkg-icon { flex-shrink: 0; font-size: 14px; margin-top: 0px; }
+    .package-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+    .package-alt { font-size: 11px; color: var(--text-light); text-align: center; font-style: italic; }
 
     .footer-brand { text-align: center; margin-top: 40px; font-size: 11px; color: var(--text-light); opacity: 0.7; }
 
@@ -148,7 +190,6 @@
     .cal-day.too-soon:hover { background: rgba(191,80,64,0.08); color: #bf5040; }
     .cal-day.empty { pointer-events: none; }
 
-    /* Too-soon popup */
     #too-soon-popup {
         display: none; position: absolute; left: 50%; transform: translateX(-50%);
         bottom: calc(100% + 8px); background: #3F4438; color: white;
@@ -173,6 +214,9 @@
     @media (min-width: 500px) {
         .options { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     }
+    @media (max-width: 499px) {
+        .package-features { grid-template-columns: 1fr !important; }
+    }
     </style>
 </head>
 <body>
@@ -188,9 +232,9 @@
     </div>
 
     <div class="intro-section">
-        <h2 class="intro-title">Get Your Personalized Timing</h2>
+        <h2 class="intro-title">Get Your Personalized Maternity Quote</h2>
         <p class="intro-text">
-            Answer a few quick questions → get your exact week window, booking urgency, and tips so you can reserve your spot before we fill up <i>(only 6 sessions/month)</i>.
+            Answer a few questions (20 seconds) → Get your exact week window, booking urgency, and quote so you can reserve your spot before we fill up <i>(only 6 sessions/month)</i>.
         </p>
     </div>
 
@@ -265,21 +309,22 @@
         </div>
     </div>
 
-    <!-- Step 5: Setting -->
+    <!-- Step 5: Who's joining? (replaces old setting question — drives both setting + package) -->
     <div class="step" id="step-5">
-        <div class="question">Where would you love to shoot?</div>
+        <div class="question">Who's joining you for photos?</div>
+        <div class="hint">This helps us match you to the right experience.</div>
         <div class="options">
-            <div class="option" data-key="setting" data-value="outdoor" onclick="selectOption(this)">
-                <div class="option-title">🌿 Outdoor</div>
-                <div class="option-desc">Natural light, golden hour, greenery</div>
+            <div class="option" data-key="whoJoins" data-value="momOnly" onclick="selectOption(this)">
+                <div class="option-title">Just me 🤍</div>
+                <div class="option-desc">Intimate studio portraits — all about you and your bump</div>
             </div>
-            <div class="option" data-key="setting" data-value="indoor" onclick="selectOption(this)">
-                <div class="option-title">🏛 Indoor / Studio</div>
-                <div class="option-desc">Controlled, elegant, weather-proof</div>
+            <div class="option" data-key="whoJoins" data-value="partner" onclick="selectOption(this)">
+                <div class="option-title">Me + my partner 💑</div>
+                <div class="option-desc">Include your husband or partner in some or all shots</div>
             </div>
-            <div class="option" data-key="setting" data-value="both" onclick="selectOption(this)">
-                <div class="option-title">✨ Both</div>
-                <div class="option-desc">Best of both worlds</div>
+            <div class="option" data-key="whoJoins" data-value="family" onclick="selectOption(this)">
+                <div class="option-title">The whole family 👨‍👩‍👧</div>
+                <div class="option-desc">Partner, kids, fur babies — everyone welcome</div>
             </div>
         </div>
         <div class="error-msg" id="error-5">Please make a selection.</div>
@@ -288,28 +333,16 @@
         </div>
     </div>
 
-    <!-- Step 6: High-risk -->
-    <div class="step" id="step-6">
-        <div class="question">Any special considerations?</div>
-        <div class="hint">Optional — helps us personalize your timing.</div>
-        <div class="options" style="grid-template-columns:1fr; max-width: 400px; margin: 0 auto 20px;">
-            <div class="checkbox-option" id="highRiskBox" onclick="toggleCheckbox()">
-                <div class="checkbox-label" id="highRiskLabel">☐ &nbsp;High-risk pregnancy</div>
-            </div>
-        </div>
-        <div class="buttons">
-            <button class="btn btn-back" onclick="goToStep(5)">Back</button>
-            <button class="btn btn-gold" onclick="calculate()">Get My Timing →</button>
-        </div>
-    </div>
+    <!-- Step 6: Special considerations (hidden — still collected, no UI shown) -->
+    <!-- High-risk is derived silently; step 6 is now the transition screen -->
 
-    <!-- Loading -->
+    <!-- Transition / Preview Screen -->
     <div class="loading-screen" id="loading">
         <div class="spinner"></div>
-        <div style="font-family:'Playfair Display',serif; font-size:22px; color:var(--deep); margin-bottom:8px;">Building Your Plan…</div>
-        <p style="font-size:13px;color:var(--text-light);">Calculating your perfect session window</p>
+        <div id="transition-package-name" style="font-family:'Playfair Display',serif; font-size:clamp(20px,5vw,26px); font-style:italic; color:var(--deep); margin: 16px 0 6px;"></div>
+        <p id="transition-tagline" style="font-size:12px; letter-spacing:0.8px; text-transform:uppercase; color:var(--accent); margin-bottom:12px;"></p>
+        <p style="font-size:13px; color:var(--text-light);">Building your personalized quote…</p>
     </div>
-
 
     <div class="footer-brand">© Two Wild Souls Photography · Metro Detroit</div>
 </div>
@@ -327,9 +360,9 @@
             <div>Thu</div><div>Fri</div><div>Sat</div>
         </div>
         <div class="cal-days-wrapper">
-        <div id="too-soon-popup">She's already past 32 weeks — unfortunately we can't accommodate sessions this late. Please call us to discuss options! 💛</div>
-        <div id="cal-days-grid" class="cal-days-grid"></div>
-    </div>
+            <div id="too-soon-popup">She's already past 32 weeks — unfortunately we can't accommodate sessions this late. Please call us to discuss options! 💛</div>
+            <div id="cal-days-grid" class="cal-days-grid"></div>
+        </div>
         <div class="cal-footer">
             <button class="btn-cancel" onclick="closeCalendar()">Cancel</button>
             <button class="btn-done" onclick="confirmCalendar()">Done</button>
@@ -340,24 +373,57 @@
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
 const state = {
-    dueDate: null,
+    dueDate:   null,
     firstBaby: null,
     multiples: null,
-    style: null,
-    setting: null,
-    highRisk: false
+    style:     null,
+    whoJoins:  null,   // 'momOnly' | 'partner' | 'family'
+    highRisk:  false
 };
 
-let currentStep = 1;
-const totalSteps = 6;
+// Derived automatically from whoJoins:
+//   momOnly  → package: 'portraits',   setting: 'indoor'
+//   partner  → package: 'whiteGlove',  setting: 'both'
+//   family   → package: 'whiteGlove',  setting: 'both'
 
-// Calendar state
+let currentStep = 1;
+const totalSteps = 5;
 let calViewYear, calViewMonth, calTempDate = null;
+
+// ─── PACKAGE CONFIG ───────────────────────────────────────────────────────────
+const packages = {
+    portraits: {
+        name:    'Portraits of Just Mom',
+        tagline: 'Intimate · Studio Only · All About You',
+        emoji:   '🤍',
+        reason:  'Based on your answers, we\'d recommend our intimate studio experience — beautifully focused portraits of you and your bump, with designer gowns, pro hair & makeup, and elegant lighting that\'s perfect for solo sessions.',
+        features: [
+            { icon: '🏛', text: 'In-studio only — controlled, elegant lighting' },
+            { icon: '👗', text: 'Full designer gown wardrobe included' },
+            { icon: '💄', text: 'Pro hair & makeup artistry' },
+            { icon: '📸', text: 'Solo portraits — just you and your bump' },
+        ],
+        alt: 'Want to include your partner or family? We can always upgrade you to the White Glove Experience.'
+    },
+    whiteGlove: {
+        name:    'White Glove Experience',
+        tagline: 'Full Family · Studio & Outdoors · The Full Story',
+        emoji:   '✨',
+        reason:  'Based on your answers, the White Glove Experience is your match — from golden-hour outdoor portraits to elegant studio shots, it\'s designed to include your whole crew and tell the full story of this season.',
+        features: [
+            { icon: '🌿', text: 'Indoor & outdoor locations' },
+            { icon: '👨‍👩‍👧', text: 'Partner, kids & family fully included' },
+            { icon: '👗', text: 'Designer gowns + family styling guidance' },
+            { icon: '💄', text: 'Pro hair & makeup for mom' },
+        ],
+        alt: 'Prefer an intimate solo session? Our Portraits of Just Mom package is also available.'
+    }
+};
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
     const now = new Date();
-    calViewYear = now.getFullYear();
+    calViewYear  = now.getFullYear();
     calViewMonth = now.getMonth();
     buildDots();
     updateProgress();
@@ -370,7 +436,6 @@ function buildDots() {
     for (let i = 1; i <= totalSteps; i++) {
         const d = document.createElement('div');
         d.className = 'dot' + (i === currentStep ? ' active' : i < currentStep ? ' completed' : '');
-        d.id = 'dot-' + i;
         container.appendChild(d);
     }
 }
@@ -385,11 +450,11 @@ function updateProgress() {
 function goToStep(n) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('loading').style.display = 'none';
-    const target = document.getElementById('step-' + n) || document.getElementById('step-results');
+    const target = document.getElementById('step-' + n);
     if (target) target.classList.add('active');
     currentStep = n;
     updateProgress();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 6 && state.whoJoins) {} // unused
 }
 
 // ─── STEP 1 VALIDATION ───────────────────────────────────────────────────────
@@ -404,30 +469,58 @@ function validateStep1() {
 
 // ─── OPTION SELECTION (steps 2–5) ────────────────────────────────────────────
 function selectOption(el) {
-    const key = el.dataset.key;
-    const value = el.dataset.value;
+    const key     = el.dataset.key;
+    const value   = el.dataset.value;
     const stepNum = parseInt(el.closest('.step').id.replace('step-', ''));
 
-    // Deselect siblings in same step
     el.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
-
     state[key] = value;
 
-    // Hide error
     const err = document.getElementById('error-' + stepNum);
     if (err) err.classList.remove('show');
 
-    // Auto-advance after short delay
     setTimeout(() => {
-        if (stepNum < 6) goToStep(stepNum + 1);
+        if (stepNum < 5) goToStep(stepNum + 1);
+        else if (stepNum === 5) calculate();
     }, 280);
+}
+
+// ─── PACKAGE RECOMMENDATION ──────────────────────────────────────────────────
+function getRecommendedPackage() {
+    return state.whoJoins === 'momOnly' ? 'portraits' : 'whiteGlove';
+}
+
+function renderPackageRecommendation() {
+    const pkgKey = getRecommendedPackage();
+    const pkg    = packages[pkgKey];
+    const container = document.getElementById('package-recommendation');
+
+    const featuresHtml = pkg.features.map(f =>
+        `<li><span class="pkg-icon">${f.icon}</span>${f.text}</li>`
+    ).join('');
+
+    container.innerHTML = `
+        <div class="package-card">
+            <div class="package-card-header">
+                <div class="package-eyebrow">✦ Your Recommended Package ✦</div>
+                <div class="package-name">${pkg.emoji} ${pkg.name}</div>
+                <div class="package-tagline">${pkg.tagline}</div>
+            </div>
+            <div class="package-card-body">
+                <p class="package-reason">${pkg.reason}</p>
+                <ul class="package-features">${featuresHtml}</ul>
+                <hr class="package-divider">
+                <p class="package-alt">${pkg.alt}</p>
+            </div>
+        </div>
+    `;
 }
 
 // ─── CHECKBOX (step 6) ───────────────────────────────────────────────────────
 function toggleCheckbox() {
     state.highRisk = !state.highRisk;
-    const box = document.getElementById('highRiskBox');
+    const box   = document.getElementById('highRiskBox');
     const label = document.getElementById('highRiskLabel');
     box.classList.toggle('selected', state.highRisk);
     label.textContent = (state.highRisk ? '☑' : '☐') + '  High-risk pregnancy';
@@ -435,18 +528,16 @@ function toggleCheckbox() {
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
 function openCalendar() {
-    // Start from current selection or today
     if (state.dueDate) {
-        calViewYear = state.dueDate.getFullYear();
+        calViewYear  = state.dueDate.getFullYear();
         calViewMonth = state.dueDate.getMonth();
-        calTempDate = new Date(state.dueDate);
+        calTempDate  = new Date(state.dueDate);
     } else {
-        // Jump straight to the first valid date (8 weeks from today)
         const firstValid = new Date();
         firstValid.setDate(firstValid.getDate() + 56);
-        calViewYear = firstValid.getFullYear();
+        calViewYear  = firstValid.getFullYear();
         calViewMonth = firstValid.getMonth();
-        calTempDate = null;
+        calTempDate  = null;
     }
     renderCalendar();
     document.getElementById('calendar-overlay').classList.add('open');
@@ -460,7 +551,7 @@ function closeCalendar() {
 function confirmCalendar() {
     if (calTempDate) {
         state.dueDate = new Date(calTempDate);
-        const opts = { year: 'numeric', month: 'long', day: 'numeric' };
+        const opts   = { year: 'numeric', month: 'long', day: 'numeric' };
         const dateEl = document.getElementById('selected-date');
         dateEl.textContent = state.dueDate.toLocaleDateString('en-US', opts);
         dateEl.classList.remove('date-placeholder');
@@ -479,7 +570,7 @@ function handleOverlayClick(e) {
 function changeMonth(dir) {
     calViewMonth += dir;
     if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
-    if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+    if (calViewMonth < 0)  { calViewMonth = 11; calViewYear--; }
     renderCalendar();
 }
 
@@ -492,13 +583,13 @@ function renderCalendar() {
     grid.innerHTML = '';
 
     const today = new Date(); today.setHours(0,0,0,0);
-    // Min selectable: today
     const minDate = new Date(today);
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 56);
 
-    const firstDay = new Date(calViewYear, calViewMonth, 1).getDay();
+    const firstDay    = new Date(calViewYear, calViewMonth, 1).getDay();
     const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
 
-    // Empty cells before first day
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement('button');
         empty.className = 'cal-day empty';
@@ -513,18 +604,12 @@ function renderCalendar() {
         const thisDate = new Date(calViewYear, calViewMonth, d);
         thisDate.setHours(0,0,0,0);
 
-        const maxDate = new Date(today);
-        maxDate.setDate(today.getDate() + 56); // due date must be 8+ weeks away (mom ≤32 weeks)
-
         if (thisDate < minDate) {
-            // Past date — plain disabled
             btn.classList.add('disabled');
         } else if (thisDate < maxDate) {
-            // Already past 32 weeks — tappable but shows error popup
             btn.classList.add('disabled', 'too-soon');
             btn.onclick = () => showTooSoonPopup();
         } else {
-            // Valid selectable date
             if (thisDate.getTime() === today.getTime()) btn.classList.add('today');
             if (calTempDate) {
                 const t = new Date(calTempDate); t.setHours(0,0,0,0);
@@ -532,7 +617,6 @@ function renderCalendar() {
             }
             btn.onclick = () => selectCalDay(thisDate, btn);
         }
-
         grid.appendChild(btn);
     }
 }
@@ -546,7 +630,6 @@ function showTooSoonPopup() {
 
 function selectCalDay(date, btn) {
     calTempDate = new Date(date);
-    // Update visuals
     document.querySelectorAll('.cal-day').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 }
@@ -554,19 +637,26 @@ function selectCalDay(date, btn) {
 // ─── CALCULATION & REDIRECT ──────────────────────────────────────────────────
 function calculate() {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+    // Show branded transition screen immediately
+    const pkgKey = getRecommendedPackage();
+    const pkg    = packages[pkgKey];
+    document.getElementById('transition-package-name').textContent = pkg.emoji + ' ' + pkg.name;
+    document.getElementById('transition-tagline').textContent = pkg.tagline;
     document.getElementById('loading').style.display = 'block';
 
     setTimeout(() => {
-        const due = state.dueDate;
-        const isFirst = state.firstBaby === 'yes';
+        const due      = state.dueDate;
+        const isFirst  = state.firstBaby === 'yes';
         const multiples = state.multiples === 'yes';
-        const style = state.style || 'full';
-        const setting = state.setting;
+        const style    = state.style || 'full';
         const highRisk = state.highRisk;
+        const pkgKey   = getRecommendedPackage();
+        const setting  = state.whoJoins === 'momOnly' ? 'indoor' : 'both';
 
-        const todayMs = new Date(); todayMs.setHours(0,0,0,0);
+        const todayMs   = new Date(); todayMs.setHours(0,0,0,0);
         const conception = new Date(due.getTime() - 280 * 86400000);
-        const daysSince = Math.floor((todayMs - conception) / 86400000);
+        const daysSince  = Math.floor((todayMs - conception) / 86400000);
         const currentWeek = Math.max(1, Math.min(42, Math.ceil(daysSince / 7)));
 
         let startWeek, endWeek;
@@ -581,13 +671,13 @@ function calculate() {
         }
 
         if (!multiples) {
-            if (setting === 'outdoor') { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
-            else if (setting === 'indoor') { startWeek = Math.min(32, startWeek + 1); endWeek = Math.min(34, endWeek + 1); }
+            if (setting === 'outdoor')      { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
+            else if (setting === 'indoor')  { startWeek = Math.min(32, startWeek + 1); endWeek = Math.min(34, endWeek + 1); }
         }
 
         if (highRisk && !multiples) { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
 
-        endWeek   = Math.min(endWeek, 32);
+        endWeek   = Math.min(endWeek,   32);
         startWeek = Math.min(startWeek, 32);
 
         const isLate     = currentWeek >= 33;
@@ -595,9 +685,9 @@ function calculate() {
         const isInWindow = currentWeek >= startWeek && currentWeek <= endWeek && !isUrgent && !isLate;
 
         let context = 'early';
-        if (isLate || isUrgent) context = 'late';
-        else if (isInWindow) context = 'inWindow';
-        else if (currentWeek > endWeek) context = 'pastWindow';
+        if (isLate || isUrgent)          context = 'late';
+        else if (isInWindow)             context = 'inWindow';
+        else if (currentWeek > endWeek)  context = 'pastWindow';
 
         const maternityUrl = 'https://twowildsoulsphotography.com/detroit-maternity-photographer-ads-custom';
         const newbornUrl   = 'https://twowildsoulsphotography.com/detroit-newborn-photographer-ads';
@@ -619,12 +709,16 @@ function calculate() {
             bookby:  bookByStr,
             type:    isLate ? 'newborn' : 'maternity',
             style:   style,
-            setting: setting || '',
+            setting: setting,
+            package: pkgKey,
             duedate: due.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})
         });
 
-        const fbclid = new URLSearchParams(window.location.search).get('fbclid');
+        const urlParams = new URLSearchParams(window.location.search);
+        const fbclid = urlParams.get('fbclid');
+        const gclid  = urlParams.get('gclid');
         if (fbclid) params.append('fbclid', fbclid);
+        if (gclid)  params.append('gclid', gclid);
 
         try {
             fbq('track', 'Lead', {
