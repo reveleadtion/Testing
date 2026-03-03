@@ -3,185 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maternity Photo Timing | Two Wild Souls Photography</title>
+    
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+    (window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1484618222285119');
+    fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1484618222285119&ev=PageView&noscript=1"/>
+    </noscript>
+    
+    <title>Find Your Best Time for Maternity Photos | Instant Results</title>
+    <meta name="description" content="Find your ideal maternity photo week window in 20 seconds and get a personalized quote. Pro hair & makeup, designer gowns, studio & outdoor. Metro Detroit.">
 
     <style>
     @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
-
     :root {
-        --bg: #FAFAF7;
-        --text: #2E2F2C;
-        --text-light: #6B6E6A;
-        --accent: #7C8A5A;
-        --gold: #C7B27A;
-        --deep: #3F4438;
-        --border: #DDD9D3;
-        --error: #bf5040;
+        --bg: #FAFAF7; --text: #2E2F2C; --text-light: #6B6E6A;
+        --accent: #7C8A5A; --gold: #C7B27A; --deep: #3F4438;
+        --border: #DDD9D3; --error: #bf5040;
     }
-
     * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-        font-family: "DM Sans", sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        line-height: 1.5;
-        min-height: 100vh;
-        padding: 24px 16px 40px;
-    }
-
+    body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; padding: 24px 16px 40px; }
     .container { max-width: 900px; margin: 0 auto; }
-
     .brand-header { text-align: center; margin-bottom: 20px; }
     .brand-logo { font-family: "Playfair Display", serif; font-size: clamp(18px, 7vw, 22px); font-weight: 400; color: var(--deep); margin-bottom: 4px; }
     .brand-logo span { color: var(--gold); font-style: italic; }
     .brand-tagline { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
-
-    .tagline-excerpt {
-        font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase;
-        color: var(--text-light); text-align: center; margin: 12px 0 20px; line-height: 1.6;
-    }
+    .tagline-excerpt { font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-light); text-align: center; margin: 12px 0 20px; line-height: 1.6; }
     .tagline-excerpt strong { color: var(--deep); }
-
     .intro-section { text-align: center; margin-bottom: 24px; }
     .intro-title { font-family: "Playfair Display", serif; font-size: clamp(14px, 5vw, 20px); font-weight: 400; color: var(--deep); margin-bottom: 8px; }
     .intro-text { font-size: 14px; color: var(--text-light); line-height: 1.6; }
-
     .progress-bar { height: 3px; background: rgba(63,68,56,0.12); margin: 0 0 20px; border-radius: 2px; overflow: hidden; }
     .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--gold)); transition: width 0.5s ease; }
-
     .dots { display: flex; justify-content: center; gap: 8px; margin: 0 0 16px; }
     .dot { width: 6px; height: 6px; border-radius: 50%; background: #E0DDD8; transition: all 0.3s; }
     .dot.active { background: var(--accent); transform: scale(1.4); }
     .dot.completed { background: var(--gold); transform: scale(1.1); }
-
     .step { display: none; animation: fadeIn 0.3s ease; }
     .step.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
     .question { font-family: "Playfair Display", serif; font-size: clamp(20px, 5vw, 26px); font-weight: 400; margin: 0 0 8px; text-align: center; }
     .hint { font-size: 13px; color: var(--text-light); font-style: italic; text-align: center; margin: 0 0 16px; }
-
     .options { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0 0 20px; }
-    .option {
-        padding: 16px; border: 1.5px solid var(--border); border-radius: 6px;
-        cursor: pointer; transition: all 0.2s; background: white; text-align: center;
-    }
+    .option { padding: 16px; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; background: white; text-align: center; }
     .option:hover { border-color: var(--accent); background: rgba(124,138,90,0.04); }
     .option.selected { border-color: var(--accent); background: rgba(124,138,90,0.08); box-shadow: 0 0 0 2px rgba(124,138,90,0.15); }
     .option-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
     .option-desc { font-size: 12px; color: var(--text-light); }
-
-    .date-picker {
-        width: 100%; padding: 14px 20px; font-size: 15px; background: white;
-        border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer;
-        text-align: center; transition: all 0.2s; margin-bottom: 16px;
-        font-family: "DM Sans", sans-serif;
-    }
+    .date-picker { width: 100%; padding: 14px 20px; font-size: 15px; background: white; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; margin-bottom: 16px; font-family: "DM Sans", sans-serif; }
     .date-picker:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,138,90,0.1); }
     .date-placeholder { color: var(--text-light); }
-
-    .checkbox-option { padding: 14px; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; background: white; transition: all 0.2s; text-align: center; }
-    .checkbox-option:hover { border-color: var(--accent); background: rgba(124,138,90,0.04); }
-    .checkbox-option.selected { border-color: var(--accent); background: rgba(124,138,90,0.08); }
-    .checkbox-label { font-size: 15px; font-weight: 500; }
-
     .buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
-    .btn {
-        padding: 12px 28px; font-size: 12px; font-weight: 500; letter-spacing: 0.8px;
-        text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.2s; min-width: 140px;
-        font-family: "DM Sans", sans-serif;
-    }
+    .btn { padding: 12px 28px; font-size: 12px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.2s; min-width: 140px; font-family: "DM Sans", sans-serif; }
     .btn-back { background: transparent; border: 1.5px solid var(--border); color: var(--text-light); }
     .btn-back:hover { border-color: var(--text); color: var(--text); }
     .btn-next { background: linear-gradient(90deg, var(--accent), var(--gold)); color: white; border: none; }
-    .btn-gold { background: linear-gradient(90deg, var(--accent), var(--gold)); color: white; border: none; }
-
     .error-msg { color: var(--error); font-size: 12px; text-align: center; margin: 8px 0; display: none; }
     .error-msg.show { display: block; }
-
     .loading-screen { text-align: center; padding: 60px 20px; display: none; }
     .spinner { width: 40px; height: 40px; border: 4px solid rgba(124,138,90,0.2); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Package Recommendation Card ───────────────────────────────────────── */
-    .package-card {
-        border-radius: 10px; overflow: hidden;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-        margin: 0 0 24px; background: white;
-        border: 1.5px solid var(--border);
-        animation: fadeIn 0.4s ease;
-    }
-    .package-card-header {
-        padding: 20px 22px 16px;
-        background: linear-gradient(120deg, var(--deep) 0%, #5a6147 100%);
-        color: white;
-        text-align: center;
-    }
-    .package-eyebrow {
-        font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
-        opacity: 0.7; margin-bottom: 8px;
-    }
-    .package-name {
-        font-family: "Playfair Display", serif;
-        font-size: clamp(20px, 5vw, 26px);
-        font-weight: 400; font-style: italic;
-        margin-bottom: 6px; line-height: 1.2;
-    }
-    .package-tagline {
-        font-size: 11px; opacity: 0.75; letter-spacing: 0.6px;
-    }
-    .package-card-body { padding: 18px 22px; }
-    .package-reason {
-        font-size: 13px; color: var(--text-light); line-height: 1.7;
-        margin-bottom: 16px; text-align: center;
-    }
-    .package-features {
-        list-style: none; margin-bottom: 6px;
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
-    .package-features li {
-        font-size: 12.5px; color: var(--text);
-        display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
-    }
-    .pkg-icon { flex-shrink: 0; font-size: 14px; margin-top: 0px; }
-    .package-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-    .package-alt { font-size: 11px; color: var(--text-light); text-align: center; font-style: italic; }
-
     .footer-brand { text-align: center; margin-top: 40px; font-size: 11px; color: var(--text-light); opacity: 0.7; }
-
-    /* Calendar */
-    #calendar-overlay {
-        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-        z-index: 1000; align-items: center; justify-content: center; padding: 16px;
-    }
+    #calendar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
     #calendar-overlay.open { display: flex; }
-    .calendar {
-        background: white; border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,0.25);
-        max-width: 360px; width: 100%; overflow: hidden;
-    }
-    .cal-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 20px; background: var(--deep); color: white;
-    }
+    .calendar { background: white; border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,0.25); max-width: 360px; width: 100%; overflow: hidden; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--deep); color: white; }
     .cal-header span { font-family: "Playfair Display", serif; font-size: 17px; font-weight: 400; }
     .cal-header button { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 0 6px; line-height: 1; }
-    .cal-weekdays {
-        display: grid; grid-template-columns: repeat(7, 1fr);
-        padding: 10px 12px 4px; gap: 2px;
-        font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
-        text-transform: uppercase; color: var(--text-light); text-align: center;
-    }
-    .cal-days-grid {
-        display: grid; grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(6, 1fr);
-        padding: 4px 12px 12px; gap: 3px;
-        height: 228px;
-    }
-    .cal-day {
-        aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-        font-size: 13px; border-radius: 50%; cursor: pointer; transition: all 0.15s;
-        border: none; background: none; font-family: "DM Sans", sans-serif; color: var(--text);
-    }
+    .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px 12px 4px; gap: 2px; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-light); text-align: center; }
+    .cal-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(6, 1fr); padding: 4px 12px 12px; gap: 3px; height: 228px; }
+    .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 50%; cursor: pointer; transition: all 0.15s; border: none; background: none; font-family: "DM Sans", sans-serif; color: var(--text); }
     .cal-day:hover:not(.disabled):not(.empty) { background: rgba(124,138,90,0.12); }
     .cal-day.selected { background: var(--accent); color: white; }
     .cal-day.today { font-weight: 700; color: var(--accent); }
@@ -189,34 +88,15 @@
     .cal-day.too-soon { color: #CCC; cursor: pointer; }
     .cal-day.too-soon:hover { background: rgba(191,80,64,0.08); color: #bf5040; }
     .cal-day.empty { pointer-events: none; }
-
-    #too-soon-popup {
-        display: none; position: absolute; left: 50%; transform: translateX(-50%);
-        bottom: calc(100% + 8px); background: #3F4438; color: white;
-        font-size: 12px; line-height: 1.5; padding: 10px 14px; border-radius: 8px;
-        width: 240px; text-align: center; z-index: 10; pointer-events: none;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-    }
-    #too-soon-popup::after {
-        content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-        border: 6px solid transparent; border-top-color: #3F4438;
-    }
+    #too-soon-popup { display: none; position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 8px); background: #3F4438; color: white; font-size: 12px; line-height: 1.5; padding: 10px 14px; border-radius: 8px; width: 240px; text-align: center; z-index: 10; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    #too-soon-popup::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #3F4438; }
     #too-soon-popup.show { display: block; animation: fadeIn 0.2s ease; }
     .cal-days-wrapper { position: relative; }
-    .cal-footer {
-        display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border);
-        justify-content: flex-end;
-    }
+    .cal-footer { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border); justify-content: flex-end; }
     .cal-footer button { padding: 8px 20px; border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: "DM Sans", sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
     .btn-cancel { background: none; border: 1.5px solid var(--border); color: var(--text-light); }
     .btn-done { background: linear-gradient(90deg, var(--accent), var(--gold)); color: white; border: none; }
-
-    @media (min-width: 500px) {
-        .options { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    }
-    @media (max-width: 499px) {
-        .package-features { grid-template-columns: 1fr !important; }
-    }
+    @media (min-width: 500px) { .options { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } }
     </style>
 </head>
 <body>
@@ -226,11 +106,9 @@
         <div class="brand-logo">Two Wild <span>Souls</span> Photography</div>
         <div class="brand-tagline">Metro Detroit Maternity Portraits</div>
     </div>
-
     <div class="tagline-excerpt">
         <strong>Pro Hair + Makeup · Designer Gowns · In-Studio & Outdoors · Fully Guided</strong>
     </div>
-
     <div class="intro-section">
         <h2 class="intro-title">Get Your Personalized Maternity Quote</h2>
         <p class="intro-text">
@@ -268,9 +146,7 @@
             </div>
         </div>
         <div class="error-msg" id="error-2">Please make a selection.</div>
-        <div class="buttons">
-            <button class="btn btn-back" onclick="goToStep(1)">Back</button>
-        </div>
+        <div class="buttons"><button class="btn btn-back" onclick="goToStep(1)">Back</button></div>
     </div>
 
     <!-- Step 3: Multiples -->
@@ -285,9 +161,7 @@
             </div>
         </div>
         <div class="error-msg" id="error-3">Please make a selection.</div>
-        <div class="buttons">
-            <button class="btn btn-back" onclick="goToStep(2)">Back</button>
-        </div>
+        <div class="buttons"><button class="btn btn-back" onclick="goToStep(2)">Back</button></div>
     </div>
 
     <!-- Step 4: Preferred Style -->
@@ -304,12 +178,10 @@
             </div>
         </div>
         <div class="error-msg" id="error-4">Please make a selection.</div>
-        <div class="buttons">
-            <button class="btn btn-back" onclick="goToStep(3)">Back</button>
-        </div>
+        <div class="buttons"><button class="btn btn-back" onclick="goToStep(3)">Back</button></div>
     </div>
 
-    <!-- Step 5: Who's joining? (replaces old setting question — drives both setting + package) -->
+    <!-- Step 5: Who's joining? -->
     <div class="step" id="step-5">
         <div class="question">Who's joining you for photos?</div>
         <div class="hint">This helps us match you to the right experience.</div>
@@ -328,15 +200,10 @@
             </div>
         </div>
         <div class="error-msg" id="error-5">Please make a selection.</div>
-        <div class="buttons">
-            <button class="btn btn-back" onclick="goToStep(4)">Back</button>
-        </div>
+        <div class="buttons"><button class="btn btn-back" onclick="goToStep(4)">Back</button></div>
     </div>
 
-    <!-- Step 6: Special considerations (hidden — still collected, no UI shown) -->
-    <!-- High-risk is derived silently; step 6 is now the transition screen -->
-
-    <!-- Transition / Preview Screen -->
+    <!-- Transition Screen -->
     <div class="loading-screen" id="loading">
         <div class="spinner"></div>
         <div id="transition-package-name" style="font-family:'Playfair Display',serif; font-size:clamp(20px,5vw,26px); font-style:italic; color:var(--deep); margin: 16px 0 6px;"></div>
@@ -371,65 +238,39 @@
 </div>
 
 <script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
 const state = {
-    dueDate:   null,
-    firstBaby: null,
-    multiples: null,
-    style:     null,
-    whoJoins:  null,   // 'momOnly' | 'partner' | 'family'
-    highRisk:  false
+    dueDate: null, firstBaby: null, multiples: null,
+    style: null, whoJoins: null, highRisk: false
 };
-
-// Derived automatically from whoJoins:
-//   momOnly  → package: 'portraits',   setting: 'indoor'
-//   partner  → package: 'whiteGlove',  setting: 'both'
-//   family   → package: 'whiteGlove',  setting: 'both'
 
 let currentStep = 1;
 const totalSteps = 5;
 let calViewYear, calViewMonth, calTempDate = null;
 
-// ─── PACKAGE CONFIG ───────────────────────────────────────────────────────────
 const packages = {
     portraits: {
-        name:    'Portraits of Just Mom',
-        tagline: 'Intimate · Studio Only · All About You',
-        emoji:   '🤍',
-        reason:  'Based on your answers, we\'d recommend our intimate studio experience — beautifully focused portraits of you and your bump, with designer gowns, pro hair & makeup, and elegant lighting that\'s perfect for solo sessions.',
-        features: [
-            { icon: '🏛', text: 'In-studio only — controlled, elegant lighting' },
-            { icon: '👗', text: 'Full designer gown wardrobe included' },
-            { icon: '💄', text: 'Pro hair & makeup artistry' },
-            { icon: '📸', text: 'Solo portraits — just you and your bump' },
-        ],
-        alt: 'Want to include your partner or family? We can always upgrade you to the White Glove Experience.'
+        name: 'Portraits of Just Mom', tagline: 'Intimate · Studio Only · All About You', emoji: '🤍'
     },
     whiteGlove: {
-        name:    'White Glove Experience',
-        tagline: 'Full Family · Studio & Outdoors · The Full Story',
-        emoji:   '✨',
-        reason:  'Based on your answers, the White Glove Experience is your match — from golden-hour outdoor portraits to elegant studio shots, it\'s designed to include your whole crew and tell the full story of this season.',
-        features: [
-            { icon: '🌿', text: 'Indoor & outdoor locations' },
-            { icon: '👨‍👩‍👧', text: 'Partner, kids & family fully included' },
-            { icon: '👗', text: 'Designer gowns + family styling guidance' },
-            { icon: '💄', text: 'Pro hair & makeup for mom' },
-        ],
-        alt: 'Prefer an intimate solo session? Our Portraits of Just Mom package is also available.'
+        name: 'White Glove Experience', tagline: 'Full Family · Studio & Outdoors · The Full Story', emoji: '✨'
     }
 };
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ─── ENCODING HELPER ─────────────────────────────────────────────────────────
+// Packs all quiz result data into a single opaque base64 string.
+// Meta's classifier only sees: ?d=<random-looking-string>
+function encodeQuizData(data) {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+
 function init() {
     const now = new Date();
-    calViewYear  = now.getFullYear();
+    calViewYear = now.getFullYear();
     calViewMonth = now.getMonth();
     buildDots();
     updateProgress();
 }
 
-// ─── DOTS & PROGRESS ─────────────────────────────────────────────────────────
 function buildDots() {
     const container = document.getElementById('dots');
     container.innerHTML = '';
@@ -446,7 +287,6 @@ function updateProgress() {
     buildDots();
 }
 
-// ─── STEP NAVIGATION ─────────────────────────────────────────────────────────
 function goToStep(n) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('loading').style.display = 'none';
@@ -454,90 +294,44 @@ function goToStep(n) {
     if (target) target.classList.add('active');
     currentStep = n;
     updateProgress();
-    if (n === 6 && state.whoJoins) {} // unused
 }
 
-// ─── STEP 1 VALIDATION ───────────────────────────────────────────────────────
 function validateStep1() {
-    if (!state.dueDate) {
-        document.getElementById('error-1').classList.add('show');
-        return;
-    }
+    if (!state.dueDate) { document.getElementById('error-1').classList.add('show'); return; }
     document.getElementById('error-1').classList.remove('show');
     goToStep(2);
 }
 
-// ─── OPTION SELECTION (steps 2–5) ────────────────────────────────────────────
 function selectOption(el) {
-    const key     = el.dataset.key;
-    const value   = el.dataset.value;
+    const key = el.dataset.key;
+    const value = el.dataset.value;
     const stepNum = parseInt(el.closest('.step').id.replace('step-', ''));
-
     el.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
     state[key] = value;
-
     const err = document.getElementById('error-' + stepNum);
     if (err) err.classList.remove('show');
-
     setTimeout(() => {
         if (stepNum < 5) goToStep(stepNum + 1);
         else if (stepNum === 5) calculate();
     }, 280);
 }
 
-// ─── PACKAGE RECOMMENDATION ──────────────────────────────────────────────────
 function getRecommendedPackage() {
     return state.whoJoins === 'momOnly' ? 'portraits' : 'whiteGlove';
 }
 
-function renderPackageRecommendation() {
-    const pkgKey = getRecommendedPackage();
-    const pkg    = packages[pkgKey];
-    const container = document.getElementById('package-recommendation');
-
-    const featuresHtml = pkg.features.map(f =>
-        `<li><span class="pkg-icon">${f.icon}</span>${f.text}</li>`
-    ).join('');
-
-    container.innerHTML = `
-        <div class="package-card">
-            <div class="package-card-header">
-                <div class="package-eyebrow">✦ Your Recommended Package ✦</div>
-                <div class="package-name">${pkg.emoji} ${pkg.name}</div>
-                <div class="package-tagline">${pkg.tagline}</div>
-            </div>
-            <div class="package-card-body">
-                <p class="package-reason">${pkg.reason}</p>
-                <ul class="package-features">${featuresHtml}</ul>
-                <hr class="package-divider">
-                <p class="package-alt">${pkg.alt}</p>
-            </div>
-        </div>
-    `;
-}
-
-// ─── CHECKBOX (step 6) ───────────────────────────────────────────────────────
-function toggleCheckbox() {
-    state.highRisk = !state.highRisk;
-    const box   = document.getElementById('highRiskBox');
-    const label = document.getElementById('highRiskLabel');
-    box.classList.toggle('selected', state.highRisk);
-    label.textContent = (state.highRisk ? '☑' : '☐') + '  High-risk pregnancy';
-}
-
-// ─── CALENDAR ────────────────────────────────────────────────────────────────
 function openCalendar() {
     if (state.dueDate) {
-        calViewYear  = state.dueDate.getFullYear();
+        calViewYear = state.dueDate.getFullYear();
         calViewMonth = state.dueDate.getMonth();
-        calTempDate  = new Date(state.dueDate);
+        calTempDate = new Date(state.dueDate);
     } else {
         const firstValid = new Date();
         firstValid.setDate(firstValid.getDate() + 56);
-        calViewYear  = firstValid.getFullYear();
+        calViewYear = firstValid.getFullYear();
         calViewMonth = firstValid.getMonth();
-        calTempDate  = null;
+        calTempDate = null;
     }
     renderCalendar();
     document.getElementById('calendar-overlay').classList.add('open');
@@ -551,7 +345,7 @@ function closeCalendar() {
 function confirmCalendar() {
     if (calTempDate) {
         state.dueDate = new Date(calTempDate);
-        const opts   = { year: 'numeric', month: 'long', day: 'numeric' };
+        const opts = { year: 'numeric', month: 'long', day: 'numeric' };
         const dateEl = document.getElementById('selected-date');
         dateEl.textContent = state.dueDate.toLocaleDateString('en-US', opts);
         dateEl.classList.remove('date-placeholder');
@@ -570,7 +364,7 @@ function handleOverlayClick(e) {
 function changeMonth(dir) {
     calViewMonth += dir;
     if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
-    if (calViewMonth < 0)  { calViewMonth = 11; calViewYear--; }
+    if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
     renderCalendar();
 }
 
@@ -578,32 +372,25 @@ function renderCalendar() {
     const monthNames = ['January','February','March','April','May','June',
                         'July','August','September','October','November','December'];
     document.getElementById('cal-header-text').textContent = monthNames[calViewMonth] + ' ' + calViewYear;
-
     const grid = document.getElementById('cal-days-grid');
     grid.innerHTML = '';
-
     const today = new Date(); today.setHours(0,0,0,0);
     const minDate = new Date(today);
     const maxDate = new Date(today);
     maxDate.setDate(today.getDate() + 56);
-
-    const firstDay    = new Date(calViewYear, calViewMonth, 1).getDay();
+    const firstDay = new Date(calViewYear, calViewMonth, 1).getDay();
     const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
-
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement('button');
         empty.className = 'cal-day empty';
         grid.appendChild(empty);
     }
-
     for (let d = 1; d <= daysInMonth; d++) {
         const btn = document.createElement('button');
         btn.className = 'cal-day';
         btn.textContent = d;
-
         const thisDate = new Date(calViewYear, calViewMonth, d);
         thisDate.setHours(0,0,0,0);
-
         if (thisDate < minDate) {
             btn.classList.add('disabled');
         } else if (thisDate < maxDate) {
@@ -637,24 +424,22 @@ function selectCalDay(date, btn) {
 // ─── CALCULATION & REDIRECT ──────────────────────────────────────────────────
 function calculate() {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-
-    // Show branded transition screen immediately
     const pkgKey = getRecommendedPackage();
-    const pkg    = packages[pkgKey];
+    const pkg = packages[pkgKey];
     document.getElementById('transition-package-name').textContent = pkg.emoji + ' ' + pkg.name;
     document.getElementById('transition-tagline').textContent = pkg.tagline;
     document.getElementById('loading').style.display = 'block';
 
     setTimeout(() => {
-        const due      = state.dueDate;
-        const isFirst  = state.firstBaby === 'yes';
+        const due       = state.dueDate;
+        const isFirst   = state.firstBaby === 'yes';
         const multiples = state.multiples === 'yes';
-        const style    = state.style || 'full';
-        const highRisk = state.highRisk;
-        const pkgKey   = getRecommendedPackage();
-        const setting  = state.whoJoins === 'momOnly' ? 'indoor' : 'both';
+        const style     = state.style || 'full';
+        const highRisk  = state.highRisk;
+        const pkgKey    = getRecommendedPackage();
+        const setting   = state.whoJoins === 'momOnly' ? 'indoor' : 'both';
 
-        const todayMs   = new Date(); todayMs.setHours(0,0,0,0);
+        const todayMs    = new Date(); todayMs.setHours(0,0,0,0);
         const conception = new Date(due.getTime() - 280 * 86400000);
         const daysSince  = Math.floor((todayMs - conception) / 86400000);
         const currentWeek = Math.max(1, Math.min(42, Math.ceil(daysSince / 7)));
@@ -671,13 +456,12 @@ function calculate() {
         }
 
         if (!multiples) {
-            if (setting === 'outdoor')      { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
-            else if (setting === 'indoor')  { startWeek = Math.min(32, startWeek + 1); endWeek = Math.min(34, endWeek + 1); }
+            if (setting === 'outdoor')     { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
+            else if (setting === 'indoor') { startWeek = Math.min(32, startWeek + 1); endWeek = Math.min(34, endWeek + 1); }
         }
-
         if (highRisk && !multiples) { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
 
-        endWeek   = Math.min(endWeek,   32);
+        endWeek   = Math.min(endWeek, 32);
         startWeek = Math.min(startWeek, 32);
 
         const isLate     = currentWeek >= 33;
@@ -685,9 +469,9 @@ function calculate() {
         const isInWindow = currentWeek >= startWeek && currentWeek <= endWeek && !isUrgent && !isLate;
 
         let context = 'early';
-        if (isLate || isUrgent)          context = 'late';
-        else if (isInWindow)             context = 'inWindow';
-        else if (currentWeek > endWeek)  context = 'pastWindow';
+        if (isLate || isUrgent)         context = 'late';
+        else if (isInWindow)            context = 'inWindow';
+        else if (currentWeek > endWeek) context = 'pastWindow';
 
         const maternityUrl = 'https://twowildsoulsphotography.com/detroit-maternity-photographer-ads-custom';
         const newbornUrl   = 'https://twowildsoulsphotography.com/detroit-newborn-photographer-ads';
@@ -702,7 +486,9 @@ function calculate() {
             bookByStr = 'Today';
         }
 
-        const params = new URLSearchParams({
+        // ── ENCODE all quiz data into one opaque blob ──────────────────────
+        // The landing page reads `d` and decodes it. Meta only sees ?d=xyz
+        const quizData = {
             week:    currentWeek,
             status:  context,
             window:  isLate || isUrgent ? '' : `${startWeek}-${endWeek}`,
@@ -710,15 +496,18 @@ function calculate() {
             type:    isLate ? 'newborn' : 'maternity',
             style:   style,
             setting: setting,
-            package: pkgKey,
-            duedate: due.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})
-        });
+            package: pkgKey
+        };
+        const encoded = encodeQuizData(quizData);
 
+        // Pass fbclid/gclid through unencoded so Meta/Google can still read them
         const urlParams = new URLSearchParams(window.location.search);
         const fbclid = urlParams.get('fbclid');
         const gclid  = urlParams.get('gclid');
-        if (fbclid) params.append('fbclid', fbclid);
-        if (gclid)  params.append('gclid', gclid);
+
+        const finalParams = new URLSearchParams({ d: encoded });
+        if (fbclid) finalParams.append('fbclid', fbclid);
+        if (gclid)  finalParams.append('gclid', gclid);
 
         try {
             fbq('track', 'Lead', {
@@ -729,11 +518,10 @@ function calculate() {
             });
         } catch(e) {}
 
-        window.location.href = `${dest}?${params.toString()}`;
+        window.location.href = `${dest}?${finalParams.toString()}`;
     }, 1600);
 }
 
-// ─── START ────────────────────────────────────────────────────────────────────
 init();
 </script>
 
