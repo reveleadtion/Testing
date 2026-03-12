@@ -517,8 +517,9 @@ function calculate() {
                 currency: 'USD'
             });
         } catch(e) {}
-
-        window.location.href = `${dest}?${finalParams.toString()}`;
+        setTimeout(() => {
+            window.location.href = `${dest}?${finalParams.toString()}`;
+        }, 500);
     }, 1600);
 }
 
