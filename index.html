@@ -1203,13 +1203,12 @@ function twsOptinSubmit(){
 
   // Call 1: subscribe to list
   var subPayload={data:{type:'subscription',attributes:{
-    list_id:TWS_KL_LIST_ID,
     custom_source:'early_optin_embed',
     profile:{data:{type:'profile',attributes:{
       email:email.trim(),
       first_name:name.trim()
     }}}
-  }}};
+  },relationships:{list:{data:{type:'list',id:TWS_KL_LIST_ID}}}}};
 
   // Call 2: identify with all custom tws_ properties
   var idPayload={data:{type:'profile',attributes:{
