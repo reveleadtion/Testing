@@ -544,7 +544,7 @@
           <input id="tws-optin-name"  class="tws-optin__field" type="text"  placeholder="First name" autocomplete="given-name" />
           <input id="tws-optin-email" class="tws-optin__field" type="email" placeholder="Email address" autocomplete="email" />
         </div>
-        <button id="tws-optin-btn" class="tws-optin__submit" onclick="twsOptinSubmit()">Send Me the Guide</button>
+        <button id="tws-optin-btn" class="tws-optin__submit">Send Me the Guide</button>
         <p class="tws-optin__trust">One email when your window opens. Unsubscribe anytime.</p>
         <p class="tws-optin__error" id="tws-optin-error"></p>
       </div>
@@ -1148,6 +1148,11 @@
 
   /* ── Bootstrap ──────────────────────────────────────────────────── */
   function init(search){ render(decode(search)); }
+
+  // Wire opt-in button via addEventListener (Showit strips onclick attributes)
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id === 'tws-optin-btn') twsOptinSubmit();
+  });
 
   var s=pageSearch();
   if(s&&s.length>1){ init(s); initModal(); return; }
