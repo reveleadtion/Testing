@@ -1195,6 +1195,7 @@ function twsOptinSubmit(){
   if(errEl) errEl.style.display='none';
   if(!name.trim()){ if(errEl){errEl.textContent='Please enter your first name.';errEl.style.display='block';} return; }
   if(!email.trim()||email.indexOf('@')<0){ if(errEl){errEl.textContent='Please enter a valid email.';errEl.style.display='block';} return; }
+  if(!phone.trim()){ if(errEl){errEl.textContent='Please enter your phone number.';errEl.style.display='block';} return; }
 
   if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
 
