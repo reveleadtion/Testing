@@ -537,8 +537,8 @@
         <span id="tws-optin-pill-text">Sessions from $490 · See full pricing</span>
       </a>
       <span class="tws-optin__eyebrow">Your Window Opens Around Week 14</span>
-      <h3 class="tws-optin__title">You're Early — That's <em>Actually a Good Thing</em></h3>
-      <p class="tws-optin__body">At week <span id="tws-optin-week"></span>, your booking window is still a few weeks out. Drop your email and we'll send you a heads-up right when your ideal timing opens, plus a curated guide to help you prepare.</p>
+      <h3 class="tws-optin__title">You're Early — <em>Good Timing</em></h3>
+      <p class="tws-optin__body">We'll send one email when your booking window opens, plus a guide to help you prepare. Nothing to think about until then.</p>
       <div id="tws-optin-form">
         <div class="tws-optin__fields">
           <input id="tws-optin-name"  class="tws-optin__field" type="text"  placeholder="First name" autocomplete="given-name" />
@@ -948,10 +948,14 @@
       ctaEl.style.display='none';
       pkgEl.style.display='none';
       optinEl.style.display='block';
+      // Suppress hero sub + badge — card has its own copy
+      $id('tws-sub').style.display='none';
+      $id('tws-badge').style.display='none';
 
     } else {
       // Normal CTA flow
       if(optinEl) optinEl.style.display='none';
+      $id('tws-sub').style.display='';
 
       if(pkg&&type!=='newborn'){
         ctaEl.style.display='none';
