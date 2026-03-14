@@ -1,6 +1,10 @@
 <!-- ═══════════════════════════════════════════════════════════════
-     TWO WILD SOULS — Combined Hero + Roadmap Embed
-     Single embed · Drop into one Code Widget · No dependencies
+     TWO WILD SOULS — Combined Hero + Roadmap Embed  v2
+     CHANGES FROM v1:
+       • Week + status now derived from due date on every page load
+         (evergreen URL — no week/status needed in the ?d= payload)
+       • tws_result_url written to Klaviyo profile on opt-in submit
+       • Backward-compatible: still accepts week/status in URL if present
      ═══════════════════════════════════════════════════════════════ -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
@@ -613,6 +617,19 @@
 <script>
 !function(){
 
+  /* ══════════════════════════════════════════════════════════════
+     v2 — EVERGREEN URL SUPPORT
+     ─────────────────────────────────────────────────────────────
+     New behaviour:
+       • If the decoded payload contains a `duedate` but NO `week`,
+         the current pregnancy week is calculated on the fly from
+         the due date every time the page loads.
+       • Status (early / inWindow / pastWindow / urgent / late) is
+         also derived automatically when not supplied.
+       • The stored URL therefore only needs: type, package, duedate.
+         Backward-compat: explicit week/status still accepted.
+     ══════════════════════════════════════════════════════════════ */
+
   /* ── Smooth scroll ──────────────────────────────────────────── */
   document.addEventListener('click',function(e){
     var a=e.target.closest('a[href*="#"]');
@@ -625,6 +642,38 @@
     t=t||document.getElementById(id);
     if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
   });
+
+  /* ── Week calculator ────────────────────────────────────────── */
+  /**
+   * Given a due-date string, returns the current pregnancy week (1–42).
+   * Conception is assumed to be 280 days before the due date (40 weeks).
+   */
+  function calcWeekFromDueDate(dueDateStr){
+    if(!dueDateStr) return null;
+    var due=new Date(dueDateStr);
+    if(isNaN(due.getTime())) return null;
+    var MS_PER_WEEK = 7*24*60*60*1000;
+    var conception  = new Date(due.getTime() - 280*24*60*60*1000);
+    var week        = Math.floor((Date.now() - conception.getTime()) / MS_PER_WEEK);
+    return Math.min(Math.max(week, 1), 42);
+  }
+
+  /**
+   * Derives the status string from the current week.
+   * Mirrors the quiz logic so returning visitors see the same
+   * status categories as first-time visitors.
+   */
+  function calcStatusFromWeek(week, type){
+    if(!week) return 'default';
+    var w = parseInt(week, 10);
+    if(isNaN(w)) return 'default';
+    if(type === 'newborn') return 'newborn';
+    if(w < 14)  return 'early';
+    if(w <= 27) return 'inWindow';
+    if(w <= 29) return 'pastWindow';
+    if(w <= 32) return 'urgent';
+    return 'late';
+  }
 
   /* ── Decoder ────────────────────────────────────────────────── */
   function decode(search){
@@ -643,14 +692,43 @@
           var s=str.replace(/,\s*"[^"]*$/,'').replace(/,\s*$/,'')+'}';
           obj=JSON.parse(s);
         }
-        return Object.assign({},FB,obj);
+        var merged = Object.assign({},FB,obj);
+
+        /* ── v2: derive week + status from duedate if not in payload ── */
+        if(merged.duedate && !merged.week){
+          var liveWeek = calcWeekFromDueDate(merged.duedate);
+          if(liveWeek !== null){
+            merged.week   = String(liveWeek);
+            merged.status = calcStatusFromWeek(liveWeek, merged.type);
+          }
+        } else if(merged.duedate && merged.week && !obj.status){
+          // week supplied but no status — still derive status
+          merged.status = calcStatusFromWeek(parseInt(merged.week,10), merged.type);
+        }
+
+        return merged;
       }
     }catch(e){ console.warn('[TWS] decode failed',e); }
+
+    /* flat params fallback */
     var p=new URLSearchParams(search);
+    var flatWeek   = p.get('week')||'';
+    var flatDue    = p.get('duedate')||'';
+    var flatType   = p.get('type')||'maternity';
+    var flatStatus = p.get('status')||'default';
+
+    if(flatDue && !flatWeek){
+      var lw = calcWeekFromDueDate(flatDue);
+      if(lw !== null){
+        flatWeek   = String(lw);
+        flatStatus = calcStatusFromWeek(lw, flatType);
+      }
+    }
+
     return Object.assign({},FB,{
-      week:p.get('week')||'', status:p.get('status')||'default',
+      week:flatWeek, status:flatStatus,
       window:p.get('window')||'', bookby:p.get('bookby')||'',
-      type:p.get('type')||'maternity', duedate:p.get('duedate')||'',
+      type:flatType, duedate:flatDue,
       package:p.get('package')||'', style:p.get('style')||'', setting:p.get('setting')||''
     });
   }
@@ -920,8 +998,32 @@
     var showOptin=!isNaN(weekNum)&&weekNum<14&&type!=='newborn';
 
     if(showOptin){
-      // Store data for Klaviyo submit
-      window._twsOptinData={week:week,status:status,duedate:q.duedate,package:pkgKey||''};
+      /*
+       * v2: Store the evergreen URL alongside other opt-in data.
+       * The URL encodes ONLY type + package + duedate — no week or
+       * status — so it auto-updates on every visit via calcWeekFromDueDate.
+       */
+      var evergreenPayload = {
+        type:    type || 'maternity',
+        package: pkgKey || '',
+        duedate: duedate || ''
+      };
+      var evergreenUrl = (function(){
+        try{
+          var base = '';
+          try{ base = window.parent.location.origin + window.parent.location.pathname; }catch(e){}
+          base = base || window.location.origin + window.location.pathname;
+          return base + '?d=' + btoa(JSON.stringify(evergreenPayload));
+        }catch(e){ return ''; }
+      })();
+
+      window._twsOptinData = {
+        week:        week,
+        status:      status,
+        duedate:     duedate,
+        package:     pkgKey || '',
+        resultUrl:   evergreenUrl   // ← v2: evergreen URL ready for Klaviyo
+      };
 
       // Week number in body
       var wkSpan=$id('tws-optin-week');
@@ -1169,7 +1271,16 @@
 }();
 </script>
 
-<!-- ── Klaviyo opt-in submit ─────────────────────────────────────── -->
+<!-- ══════════════════════════════════════════════════════════════════
+     Klaviyo opt-in submit  v2
+     ─────────────────────────────────────────────────────────────────
+     New in v2:
+       • tws_result_url written to profile properties on submission.
+         The URL is evergreen — it encodes only type + package + duedate
+         so the page recalculates the current week on every visit.
+       • Use in Klaviyo email templates as:
+           {{ person|lookup:'tws_result_url' }}
+     ══════════════════════════════════════════════════════════════════ -->
 <script>
 var TWS_KL_KEY     = 'WgMSBs';
 var TWS_KL_LIST_ID = 'V3bUGq';
@@ -1199,47 +1310,58 @@ function twsOptinSubmit(){
 
   if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
 
-  var d=window._twsOptinData||{};
-  var windowOpensDate=twsCalcWindowDate(d.duedate||'');
-  var BASE='https://a.klaviyo.com/client/';
-  var HEADS={'Content-Type':'application/json','revision':'2023-12-15'};
+  var d = window._twsOptinData || {};
+  var windowOpensDate = twsCalcWindowDate(d.duedate || '');
 
-  // Build profile attributes — add phone_number only if provided
-  var profileAttrs={
+  /*
+   * v2: tws_result_url is the evergreen URL built in render() and
+   * stored on window._twsOptinData.resultUrl.
+   * Use {{ person|lookup:'tws_result_url' }} in Klaviyo templates.
+   */
+  var resultUrl = d.resultUrl || '';
+
+  var BASE  = 'https://a.klaviyo.com/client/';
+  var HEADS = {'Content-Type':'application/json','revision':'2023-12-15'};
+
+  // Build profile attributes
+  var profileAttrs = {
     email:      email.trim(),
     first_name: name.trim(),
-    properties:{
-      tws_due_date:          d.duedate||'',
-      tws_week_at_signup:    parseInt(d.week,10)||0,
-      tws_quiz_status:       d.status||'early',
-      tws_quiz_package:      d.package||'',
+    properties: {
+      tws_due_date:          d.duedate || '',
+      tws_week_at_signup:    parseInt(d.week, 10) || 0,
+      tws_quiz_status:       d.status || 'early',
+      tws_quiz_package:      d.package || '',
       tws_window_opens_date: windowOpensDate,
-      tws_source:            'early_optin_embed'
+      tws_source:            'early_optin_embed',
+      tws_result_url:        resultUrl   // ← v2: evergreen return URL
     }
   };
   if(phone.trim()) profileAttrs.phone_number = phone.trim();
 
-  var subPayload={data:{type:'subscription',attributes:{
-    custom_source:'early_optin_embed',
-    profile:{data:{type:'profile',attributes:profileAttrs}}
+  var subPayload = {data:{type:'subscription',attributes:{
+    custom_source: 'early_optin_embed',
+    profile: {data:{type:'profile',attributes:profileAttrs}}
   },relationships:{list:{data:{type:'list',id:TWS_KL_LIST_ID}}}}};
 
-
   function showSuccess(){
-    var f=document.getElementById('tws-optin-form');
-    var s=document.getElementById('tws-optin-success');
-    if(f) f.style.display='none';
-    if(s) s.style.display='block';
+    var f = document.getElementById('tws-optin-form');
+    var s = document.getElementById('tws-optin-success');
+    if(f) f.style.display = 'none';
+    if(s) s.style.display = 'block';
   }
   function showError(){
     if(btn){ btn.disabled=false; btn.textContent='Send Me the Guide'; }
     if(errEl){ errEl.textContent='Something went wrong — please try again.'; errEl.style.display='block'; }
   }
 
-  fetch(BASE+'subscriptions/?company_id='+TWS_KL_KEY,{method:'POST',headers:HEADS,body:JSON.stringify(subPayload)})
+  fetch(BASE + 'subscriptions/?company_id=' + TWS_KL_KEY, {
+    method:  'POST',
+    headers: HEADS,
+    body:    JSON.stringify(subPayload)
+  })
   .then(function(r){
-    if(!r.ok && r.status!==202) throw new Error('sub '+r.status);
-
+    if(!r.ok && r.status !== 202) throw new Error('sub ' + r.status);
     showSuccess();
   })
   .catch(showError);
