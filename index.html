@@ -370,8 +370,8 @@ function renderBlackout(quizData, isLateRoute) {
     : `We're fully booked for <em>maternity sessions</em> this summer.`;
 
   const openingCopy = isLateRoute
-    ? `We know how much it means to have those first days with your baby captured — the tiny curled fingers, the way they sleep on your chest. That's exactly why we want to be honest with you: <strong>we're fully booked for newborn sessions in June and July</strong>, and we'd rather tell you now than have you counting on us.`
-    : `You've taken the time to find the right photographer — and that matters to us. So we want to be upfront: <strong>we're fully booked for maternity sessions in June and July</strong>. Your window deserves our full attention, and we can't give that to a session we can't take.`;
+    ? `We know how much it means to have those first days with your baby captured, the tiny curled fingers, the way they sleep on your chest. That's exactly why we want to be honest with you: <strong>we're fully booked for newborn sessions in June and July</strong>, and we'd rather tell you now than have you counting on us.`
+    : `You've taken the time to find the right photographer, and that matters to us. So we want to be upfront: <strong>we're fully booked for maternity sessions in June and July</strong>. Your window deserves our full attention, and we can't give that to a session we can't take.`;
 
   const reassureCopy = isLateRoute
     ? `The good news is your timing gives you real options. We have <strong>availability in May</strong> if baby arrives a little early, and we're <strong>back with some availability in August</strong>, ready to capture everything you've been imagining.`
@@ -381,12 +381,12 @@ function renderBlackout(quizData, isLateRoute) {
   const augTitle   = isLateRoute ? 'Newborn session in August' : 'Maternity session in August';
 
   const mayBody = isLateRoute
-    ? `If your due date shifts or baby arrives a bit early, we'll have everything ready. We hold your date as soon as you reach out — no waiting, no scrambling.`
-    : `If your session window falls at the earlier end of your range, May works beautifully. Same full experience — hair, makeup, gowns, everything. Just before the summer rush.`;
+    ? `If your due date shifts or baby arrives a bit early, we'll have everything ready. We hold your spot as soon as you reserve a date, no waiting, no scrambling.`
+    : `If your session window falls at the earlier end of your range, May can work! Same full experience — hair, makeup, gowns, everything. Just before the summer rush.`;
 
   const augBody = isLateRoute
-    ? `We're fully refreshed and back August 1st. If your baby arrives in August or later, we'd love nothing more than to be your first call.`
-    : `We open back up August 1st with full availability. Your session gets planned for your ideal window — unhurried, fully prepared, and completely yours.`;
+    ? `If your baby arrives in August or later, we'd love nothing more than to be your first call.`
+    : `We have a few spots left in August. Your session gets planned for your ideal window, unhurried, fully prepared, and completely yours.`;
 
   try { fbq('trackCustom', 'BlackoutShown', { session_type: sessionType }); } catch(e) {}
 
