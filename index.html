@@ -1,9 +1,17 @@
 <!-- ═══════════════════════════════════════════════════════════════
-     TWO WILD SOULS — Combined Hero + Roadmap Embed  v5
-     CHANGES FROM v4-debug:
-       • Fixed SMS consent — Client API uses 'channels' not 'subscriptions'
-         (subscriptions block is server-side API only)
-       • Diagnostics retained for this version, remove after confirming
+     TWO WILD SOULS — Combined Hero + Roadmap Embed  v6
+     CHANGES FROM v5:
+       • SMS consent moved inside profileAttrs.subscriptions per
+         Klaviyo Client API spec — consent blocks on top-level
+         attributes are server-side API only
+       • Debug logs retained for this test — remove after confirming
+     ─────────────────────────────────────────────────────────────
+     FULL CHANGELOG:
+       v2 · Evergreen URL — week/status derived from duedate on load
+       v3 · phone_number E.164 formatted, production base URL set
+       v4 · SMS consent attempt via top-level channels (rejected)
+       v5 · SMS consent attempt via top-level subscriptions (rejected)
+       v6 · SMS consent moved inside profile attributes (correct)
      ═══════════════════════════════════════════════════════════════ -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
@@ -1332,7 +1340,11 @@ function twsOptinSubmit(){
   var profileAttrs = {
     email:        email.trim(),
     first_name:   name.trim(),
-    phone_number: twsFormatPhone(phone), // ← v3: top-level, E.164 formatted
+    phone_number: twsFormatPhone(phone),
+    subscriptions: {
+      email: { marketing: { consent: 'SUBSCRIBED' } },
+      sms:   { marketing: { consent: 'SUBSCRIBED' } }
+    },
     properties: {
       tws_due_date:          d.duedate || '',
       tws_week_at_signup:    parseInt(d.week, 10) || 0,
@@ -1340,21 +1352,12 @@ function twsOptinSubmit(){
       tws_quiz_package:      d.package || '',
       tws_window_opens_date: windowOpensDate,
       tws_source:            'early_optin_embed',
-      tws_result_url:        resultUrl   // ← v2: evergreen return URL
+      tws_result_url:        resultUrl
     }
   };
 
   var subPayload = {data:{type:'subscription',attributes:{
     custom_source: 'early_optin_embed',
-    channels: {
-      email: {
-        consent:      'SUBSCRIBED'
-      },
-      sms: {
-        consent:      'SUBSCRIBED',
-        consented_at: new Date().toISOString().split('.')[0] + 'Z'  // ← v5: Client API uses channels not subscriptions
-      }
-    },
     profile: {data:{type:'profile',attributes:profileAttrs}}
   },relationships:{list:{data:{type:'list',id:TWS_KL_LIST_ID}}}}};
 
@@ -1369,26 +1372,18 @@ function twsOptinSubmit(){
     if(errEl){ errEl.textContent='Something went wrong — please try again.'; errEl.style.display='block'; }
   }
 
-  // ── v4-debug: log payload before sending ──────────────────────
-  console.log('[TWS] Submitting to Klaviyo...');
-  console.log('[TWS] profileAttrs:', JSON.stringify(profileAttrs, null, 2));
-  console.log('[TWS] subPayload:', JSON.stringify(subPayload, null, 2));
-
   fetch(BASE + 'subscriptions/?company_id=' + TWS_KL_KEY, {
     method:  'POST',
     headers: HEADS,
     body:    JSON.stringify(subPayload)
   })
   .then(function(r){
-    console.log('[TWS] Klaviyo status:', r.status, r.statusText);
     return r.text().then(function(body){
-      console.log('[TWS] Klaviyo response:', body);
       if(!r.ok && r.status !== 202) throw new Error('sub ' + r.status);
       showSuccess();
     });
   })
   .catch(function(err){
-    console.error('[TWS] Klaviyo error:', err);
     showError();
   });
 }
