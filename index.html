@@ -1328,16 +1328,10 @@ function twsOptinSubmit(){
   var BASE  = 'https://a.klaviyo.com/client/';
   var HEADS = {'Content-Type':'application/json','revision':'2023-12-15'};
 
-  var consentedAt = new Date(Date.now() - 1000).toISOString();
-
   var profileAttrs = {
     email:        email.trim(),
     first_name:   name.trim(),
     phone_number: twsFormatPhone(phone),
-    subscriptions: {
-      email: { marketing: { consent: 'SUBSCRIBED' } },
-      sms:   { marketing: { consent: 'SUBSCRIBED' } }
-    },
     properties: {
       tws_due_date:          d.duedate || '',
       tws_week_at_signup:    parseInt(d.week, 10) || 0,
@@ -1350,10 +1344,8 @@ function twsOptinSubmit(){
   };
 
   var subPayload = {data:{type:'subscription',attributes:{
-    custom_source:     'early_optin_embed',
-    historical_import: true,
-    consented_at:      consentedAt,
-    profile:           {data:{type:'profile',attributes:profileAttrs}}
+    custom_source: 'early_optin_embed',
+    profile:       {data:{type:'profile',attributes:profileAttrs}}
   },relationships:{list:{data:{type:'list',id:TWS_KL_LIST_ID}}}}};
 
   function showSuccess(){
