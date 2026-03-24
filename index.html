@@ -272,6 +272,15 @@ main {
   grid-column: 2; grid-row: 1 / 4;
   align-self: center; padding-left: 4px;
 }
+.blackout-opt--recommended {
+  border-color: var(--accent);
+  background: rgba(124,138,90,0.06);
+  box-shadow: 0 0 0 2px rgba(124,138,90,0.18);
+}
+.blackout-opt--recommended .blackout-opt-label {
+  color: var(--accent);
+  font-weight: 500;
+}
 .blackout-divider {
   text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--text2); opacity: 0.4; margin: 2px 0;
@@ -546,6 +555,71 @@ function buildBlackoutURLs(quizData, isLateRoute) {
   };
 }
 
+// ── BLACKOUT WINDOW RECOMMENDATION ──────────────────────────────────────────
+// Returns { windowStr, idealDate, recommendation: 'may'|'august'|'either' }
+// based on the user's quiz answers and whether this is a newborn route.
+function getBlackoutRecommendation(dueDateStr, isLateRoute) {
+  var due = new Date(dueDateStr + 'T12:00:00');
+  var conception = new Date(due.getTime() - 280 * 86400000);
+
+  if (isLateRoute) {
+    // Newborn: ideal window is 5–14 days after birth (due date proxy)
+    var nb5  = new Date(due.getTime() + 5  * 86400000);
+    var nb14 = new Date(due.getTime() + 14 * 86400000);
+    var mayEnd    = new Date('2026-05-31T23:59:59');
+    var augStart  = new Date('2026-08-01T00:00:00');
+    // If ideal window mid-point falls before June → May; if after July → August
+    var midPoint = new Date((nb5.getTime() + nb14.getTime()) / 2);
+    var rec = midPoint < mayEnd ? 'may' : (midPoint >= augStart ? 'august' : 'either');
+    var windowStr = nb5.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+      + ' – ' + nb14.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return { windowStr: windowStr, rec: rec };
+  }
+
+  // Maternity: replicate calculate() window logic from quiz answers
+  var isFirst   = state.firstBaby === 'yes';
+  var multiples = state.multiples === 'yes';
+  var style     = state.style || 'full';
+  var setting   = state.whoJoins === 'momOnly' ? 'indoor' : 'both';
+
+  var startWeek, endWeek;
+  if (multiples)       { startWeek = 24; endWeek = 28; }
+  else if (!isFirst)   { startWeek = style === 'full' ? 28 : 26; endWeek = style === 'full' ? 32 : 30; }
+  else                 { startWeek = style === 'full' ? 30 : 28; endWeek = style === 'full' ? 34 : 32; }
+  if (!multiples) {
+    if (setting === 'outdoor')     { startWeek = Math.max(20, startWeek - 2); endWeek = Math.max(22, endWeek - 2); }
+    else if (setting === 'indoor') { startWeek = Math.min(32, startWeek + 1); endWeek = Math.min(34, endWeek + 1); }
+  }
+  endWeek   = Math.min(endWeek, 32);
+  startWeek = Math.min(startWeek, 32);
+
+  // Map week range to calendar dates
+  var startDate = new Date(conception.getTime() + startWeek * 7 * 86400000);
+  var endDate   = new Date(conception.getTime() + endWeek   * 7 * 86400000);
+  var windowStr = 'weeks ' + startWeek + '–' + endWeek + ' ('
+    + startDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+    + ' – '
+    + endDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ')';
+
+  var mayEnd   = new Date('2026-05-31T23:59:59');
+  var augStart = new Date('2026-08-01T00:00:00');
+  var blackoutStart = BLACKOUT_START;
+  var blackoutEnd   = BLACKOUT_END;
+
+  // Does the window overlap with May (before blackout)?
+  var inMay    = startDate <= mayEnd;
+  // Does the window overlap with August (after blackout)?
+  var inAug    = endDate >= augStart;
+
+  var rec;
+  if (inMay && !inAug)       rec = 'may';
+  else if (inAug && !inMay)  rec = 'august';
+  else if (inMay && inAug)   rec = 'either';
+  else                       rec = 'either'; // window falls entirely in blackout — both are alternatives
+
+  return { windowStr: windowStr, startWeek: startWeek, endWeek: endWeek, startDate: startDate, endDate: endDate, rec: rec };
+}
+
 function renderBlackout(quizData, isLateRoute) {
   const content = document.getElementById('mainContent');
   const shell   = document.getElementById('progressShell');
@@ -561,6 +635,9 @@ function renderBlackout(quizData, isLateRoute) {
   const urls = buildBlackoutURLs(quizData, isLateRoute);
   const sessionType = isLateRoute ? 'newborn' : 'maternity';
 
+  const recInfo = getBlackoutRecommendation(state.dueDate, isLateRoute);
+  const rec = recInfo.rec; // 'may' | 'august' | 'either'
+
   const headline = isLateRoute
     ? `We're fully booked for <em>newborn sessions</em> this June & July.`
     : `We're fully booked for <em>maternity sessions</em> this June & July.`;
@@ -569,9 +646,26 @@ function renderBlackout(quizData, isLateRoute) {
     ? `We know how much it means to have those first days with your baby captured, the tiny curled fingers, the way they sleep on your chest. That's exactly why we want to be honest with you: <strong>we're fully booked for newborn sessions in June and July</strong>, and we'd rather tell you now than have you counting on us.`
     : `You've taken the time to find the right photographer, and that matters to us. So we want to be upfront: <strong>we're fully booked for maternity sessions in June and July</strong>. Your window deserves our full attention, and we can't give that to a session we can't take.`;
 
-  const reassureCopy = isLateRoute
-    ? `The good news is your timing gives you real options. We have <strong>availability in May</strong> if baby arrives a little early, and we're <strong>back with some availability in August</strong>, ready to capture everything you've been imagining.`
-    : `The good news is we have real availability on both sides of this window. <strong>May has a few slots left</strong> if your session falls at the earlier end of your range, and <strong>August still has some availability</strong>, fully fresh, no rush, nothing compromised.`;
+  // ── Personalised recommendation callout ──
+  var recCopy;
+  if (isLateRoute) {
+    if (rec === 'may') {
+      recCopy = `Based on your due date, your ideal newborn window falls <strong>before the summer blackout</strong>. <strong>May is your best fit</strong> — we can have everything ready right on time.`;
+    } else if (rec === 'august') {
+      recCopy = `Based on your due date, your ideal newborn window lands <strong>after our summer break</strong>. <strong>August is your recommended option</strong> — we'll be fully rested and ready to welcome your little one.`;
+    } else {
+      recCopy = `Your ideal newborn window overlaps with both sides of our summer break. <strong>Either May or August can work for you</strong> — pick whichever feels right, and we'll make it happen.`;
+    }
+  } else {
+    var wStr = recInfo.windowStr ? ' (your ideal window is ' + recInfo.windowStr + ')' : '';
+    if (rec === 'may') {
+      recCopy = `Based on your answers, your ideal maternity window falls <strong>before our summer break</strong>${wStr}. <strong>May is your recommended option</strong> — it lines up perfectly with the timing that will make your photos look and feel exactly right.`;
+    } else if (rec === 'august') {
+      recCopy = `Based on your answers, your ideal maternity window falls <strong>after our summer break</strong>${wStr}. <strong>August is your recommended option</strong> — your bump will be exactly where it needs to be, and we'll have plenty of time to plan everything together.`;
+    } else {
+      recCopy = `Based on your answers, your ideal maternity window${wStr} spans both sides of our summer break. <strong>Both May and August can work for you</strong> — May will be slightly earlier, August slightly fuller bump. Either way, we'll tailor the session to wherever you are.`;
+    }
+  }
 
   const mayTitle   = isLateRoute ? 'Newborn session in May' : 'Maternity session in May';
   const augTitle   = isLateRoute ? 'Newborn session in August' : 'Maternity session in August';
@@ -584,7 +678,13 @@ function renderBlackout(quizData, isLateRoute) {
     ? `If your baby arrives in August or later, we'd love nothing more than to be your first call.`
     : `We have a few spots left in August. Your session gets planned for your ideal window, unhurried, fully prepared, and completely yours.`;
 
-  try { fbq('trackCustom', 'BlackoutShown', { session_type: sessionType }); } catch(e) {}
+  // Badge shown on the recommended card
+  const mayLabel  = rec === 'may'    ? '✓ Your Recommended Window &mdash; May'    : 'Available Now &mdash; May';
+  const augLabel  = rec === 'august' ? '✓ Your Recommended Window &mdash; August' : 'Available &mdash; August onward';
+  const mayClass  = rec === 'may'    ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
+  const augClass  = rec === 'august' ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
+
+  try { fbq('trackCustom', 'BlackoutShown', { session_type: sessionType, recommendation: rec }); } catch(e) {}
 
   content.innerHTML = `
     <div class="blackout-screen">
@@ -592,18 +692,18 @@ function renderBlackout(quizData, isLateRoute) {
       <span class="blackout-badge">A Note on Availability</span>
       <h2 class="blackout-headline">${headline}</h2>
       <p class="blackout-body">${openingCopy}</p>
-      <div class="blackout-reassure">${reassureCopy}</div>
+      <div class="blackout-reassure">${recCopy}</div>
       <span class="blackout-options-label">Here's where we can take you</span>
       <div class="blackout-options">
-        <a class="blackout-opt" href="${urls.may}">
-          <span class="blackout-opt-label">Available Now &mdash; May</span>
+        <a class="${mayClass}" href="${urls.may}">
+          <span class="blackout-opt-label">${mayLabel}</span>
           <span class="blackout-opt-title">${mayTitle}</span>
           <span class="blackout-opt-sub">${mayBody}</span>
           <span class="blackout-opt-arrow">&#8594;</span>
         </a>
         <div class="blackout-divider">or</div>
-        <a class="blackout-opt" href="${urls.august}">
-          <span class="blackout-opt-label">Available &mdash; August onward</span>
+        <a class="${augClass}" href="${urls.august}">
+          <span class="blackout-opt-label">${augLabel}</span>
           <span class="blackout-opt-title">${augTitle}</span>
           <span class="blackout-opt-sub">${augBody}</span>
           <span class="blackout-opt-arrow">&#8594;</span>
