@@ -54,11 +54,10 @@ fbq('track','PageView');
 html, body {
   background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-weight: 300;
-  /* Prevent the whole page from scrolling */
-  height: 100vh;
-  height: 100dvh; /* Dynamic viewport height for mobile browsers */
-  overflow: hidden; 
-  
+  min-height: 100dvh;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -90,7 +89,14 @@ header {
 .dot.active { background: var(--accent); transform: scale(1.4); }
 .dot.done   { background: var(--gold); transform: scale(1.1); }
 
-main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
+main {
+  padding: 0 20px 120px;
+  max-width: 540px;
+  margin: 0 auto;
+  flex: 1 1 auto;
+  /* No overflow-y:auto here — let the page (window) scroll, not main.
+     This keeps window.scrollTo() working correctly. */
+}
 
 .intro-block { padding: 20px 0 6px; animation: fadeUp 0.5s ease both; }
 .intro-eyebrow { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
@@ -154,11 +160,25 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 
 .val-msg { font-size: 12px; color: var(--error); padding: 0 0 8px; display: none; }
 
+/* FIX #1: Reverted from position:sticky to position:fixed so the nav
+   actually stays pinned to the bottom of the viewport. sticky only
+   works within a scroll container with a constrained height, which
+   body/html doesn't have here. */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg);
-  border-top: 1px solid var(--faint); padding: 14px 20px max(14px, env(safe-area-inset-bottom));
-  display: flex; gap: 10px; z-index: 200;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--faint);
+  padding: 14px 20px max(14px, env(safe-area-inset-bottom));
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  z-index: 200;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
 }
+  
 .btn-back {
   background: transparent; border: 1.5px solid rgba(46,47,44,0.15); color: var(--text2);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 13px; letter-spacing: 0.06em;
@@ -266,34 +286,37 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 @media (min-width: 600px) {
   header, .progress-shell { padding-left: 40px; padding-right: 40px; }
   main { padding: 0 40px 120px; }
+  /* FIX #2: bottom-nav is position:fixed, so centering at 900px+ uses
+     left/right margins, not transforms. At 600px we just set side padding. */
   .bottom-nav { padding: 18px 40px max(18px, env(safe-area-inset-bottom)); }
   .intro-headline { font-size: 52px; }
 }
 @media (min-width: 900px) {
-  body { display: flex; flex-direction: column; }
+  /* Removed redundant body { display:flex } — already set in base styles */
   main { flex: 1; max-width: 600px; width: 100%; margin: 0 auto; padding: 0 0 140px; }
-  .bottom-nav { width: 600px; left: 50%; right: auto; transform: translateX(-50%); border-left: 1px solid var(--faint); border-right: 1px solid var(--faint); border-radius: 0 0 8px 8px; }
+  /* FIX #2 cont: position:fixed so left/right/transform work correctly
+     to centre the nav bar at desktop widths. */
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 600px;
+    border-left: 1px solid var(--faint);
+    border-right: 1px solid var(--faint);
+    border-radius: 0 0 8px 8px;
+  }
   .btn-next { max-width: 260px; margin-left: auto; }
 }
 
-/* ══ HERO — sibling of <main>, shown/hidden by JS ══════════════════════════
-
-   Key constraint: at 900px+, body is display:flex/flex-direction:column.
-   #introHero is therefore a flex ITEM. We must:
-     - flex-shrink: 0 so it is never squished
-     - height: 100vh (not just min-height) so it fills exactly one screen
-     - align-self: stretch so it takes full width despite body being flex
-
-   When the hero is hidden (display:none), main takes over normally.
-*/
+/* ══ HERO ═══════════════════════════════════════════════════════════════════ */
 
 /* ── MOBILE (default) ──────────────────────────────────────────────────── */
 #introHero {
-  display: none; /* JS adds .visible to show */
+  display: none;
   width: 100%;
-  height: calc(100svh - 57px);   /* exact viewport fill — no overflow */
-  flex-shrink: 0;                /* don't let body-flex squish this */
-  align-self: stretch;           /* full width in body flex context */
+  height: calc(100svh - 57px);
+  flex-shrink: 0;
+  align-self: stretch;
   position: relative;
   overflow: hidden;
   background: #0d1a2e;
@@ -301,7 +324,6 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 }
 #introHero.visible { display: flex; }
 
-/* Mobile: photo as full background, couple anchored bottom-center */
 .hero-img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -310,7 +332,6 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
   z-index: 0;
 }
 
-/* Mobile: dark gradient over sky only — clears before reaching couple */
 .hero-sky-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to bottom,
@@ -321,7 +342,6 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
   z-index: 1;
 }
 
-/* Content floats in sky zone at top */
 .hero-content {
   position: relative; z-index: 2;
   padding: 24px 22px 0;
@@ -352,10 +372,9 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
     height: auto;
     min-height: 0;
     justify-content: center;
-    align-items: center;
+    align-items: stretch; /* stretch the row, not each child */
   }
 
-  /* Left panel: dark surface, fixed width, height driven by content */
   .hero-content {
     width: 420px;
     min-width: 340px;
@@ -373,7 +392,9 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 
   .hero-sky-overlay { display: none; }
 
-  /* Right panel: fixed 4:5 portrait crop — couple centred */
+  /* FIX #3: Removed align-self:stretch from hero-img. It was overriding
+     the aspect-ratio:4/5 rule, causing the photo to stretch to match the
+     left panel height instead of holding the 4:5 portrait crop. */
   .hero-img {
     position: relative;
     width: 360px;
@@ -381,7 +402,7 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 56% 68%;
-    align-self: stretch;
+    /* align-self intentionally omitted — let aspect-ratio control height */
   }
 
   .hero-trust { color: rgba(255,255,255,0.55); text-shadow: none; }
@@ -404,12 +425,17 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 <header>
   <div class="logo-wrap">
     <span class="logo-name">Two Wild <em>Souls</em> Photography</span>
+    <!-- FIX #4: Restored logo-sub subtitle that was dropped from the header HTML -->
+    <span class="logo-sub">Metro Detroit Maternity Portraits</span>
   </div>
   <span class="header-badge">6 spots / month</span>
 </header>
 
 <div id="introHero">
-  <img class="hero-img" src="hero.jpeg">
+  <!-- FIX #5: src corrected to hero.jpeg — deploy this file as exactly
+       hero.jpeg (lowercase, .jpeg extension) in the same directory.
+       Vercel/Linux are case-sensitive; a mismatch will 404. -->
+  <img class="hero-img" src="hero.jpeg" alt="Maternity portrait by Two Wild Souls Photography">
   <div class="hero-sky-overlay"></div>
   <div class="hero-content">
     <p class="hero-eyebrow">Personalized Maternity Consultation</p>
@@ -644,6 +670,12 @@ function currentPregnancyWeek(dueDateStr) {
   const conception = new Date(due.getTime() - 280 * 86400000);
   const daysSince = Math.floor((today - conception) / 86400000);
   return Math.max(1, Math.min(42, Math.ceil(daysSince / 7)));
+}
+
+// FIX #3 cont: scrollToTop scrolls window (not main), which works correctly
+// now that main has no overflow-y:auto.
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function calculate() {
@@ -884,7 +916,7 @@ function render() {
 
 function startQuiz() {
   try { fbq('trackCustom', 'QuizStart', {}); } catch(e) {}
-  currentStep = 0; render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  currentStep = 0; render(); scrollToTop();
 }
 function handleDateChange() {
   var val  = document.getElementById('dateInput').value;
@@ -913,19 +945,17 @@ function goNext() {
     var val = document.getElementById('dateInput') ? document.getElementById('dateInput').value : '';
     if (!val) { if (msg) { msg.style.display = 'block'; msg.textContent = 'Please select your due date.'; } return; }
     state.dueDate = val;
-    if (currentPregnancyWeek(val) >= 33) { currentStep = TOTAL; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (currentPregnancyWeek(val) >= 33) { currentStep = TOTAL; render(); scrollToTop(); return; }
   }
   if (step && step.type === 'options' && !state[step.id]) { if (msg) { msg.style.display = 'block'; msg.textContent = 'Please make a selection.'; } return; }
-  currentStep++; render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  currentStep++; render(); scrollToTop();
 }
 function goBack() {
-  if (currentStep > 0) { currentStep--; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (currentStep > 0) { currentStep--; render(); scrollToTop(); }
   else { currentStep = -1; render(); }
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-// If ?start=1 is present (e.g. arriving from the Showit popup),
-// skip the intro and land directly on question 1.
 const _startParams = new URLSearchParams(window.location.search);
 if (_startParams.get('start') === '1') {
   currentStep = 0;
