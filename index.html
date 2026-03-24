@@ -54,7 +54,13 @@ fbq('track','PageView');
 html, body {
   background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-weight: 300;
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  /* Prevent the whole page from scrolling */
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  overflow: hidden; 
+  
+  display: flex;
+  flex-direction: column;
 }
 
 header {
