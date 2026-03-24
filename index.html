@@ -23,7 +23,7 @@ n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
 (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','1484618222285119');
+fbq('init','1484618222285119',{});
 fbq('track','PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
@@ -224,7 +224,6 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
   border-radius: 10px; padding: 16px 18px;
   text-align: left; transition: all 0.22s ease; text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-  /* larger tap target on mobile */
   min-height: 76px;
 }
 .blackout-opt:active { transform: scale(0.985); }
@@ -270,6 +269,128 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
   .bottom-nav { width: 600px; left: 50%; right: auto; transform: translateX(-50%); border-left: 1px solid var(--faint); border-right: 1px solid var(--faint); border-radius: 0 0 8px 8px; }
   .btn-next { max-width: 260px; margin-left: auto; }
 }
+
+/* ══ HERO — sibling of <main>, shown/hidden by JS ══════════════════════════
+
+   Key constraint: at 900px+, body is display:flex/flex-direction:column.
+   #introHero is therefore a flex ITEM. We must:
+     - flex-shrink: 0 so it is never squished
+     - height: 100vh (not just min-height) so it fills exactly one screen
+     - align-self: stretch so it takes full width despite body being flex
+
+   When the hero is hidden (display:none), main takes over normally.
+*/
+
+/* ── MOBILE (default) ──────────────────────────────────────────────────── */
+#introHero {
+  display: none; /* JS adds .visible to show */
+  width: 100%;
+  height: calc(100svh - 57px);   /* exact viewport fill — no overflow */
+  flex-shrink: 0;                /* don't let body-flex squish this */
+  align-self: stretch;           /* full width in body flex context */
+  position: relative;
+  overflow: hidden;
+  background: #0d1a2e;
+  flex-direction: column;
+}
+#introHero.visible { display: flex; }
+
+/* Mobile: photo as full background, couple anchored bottom-center */
+.hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 72%;
+  z-index: 0;
+}
+
+/* Mobile: dark gradient over sky only — clears before reaching couple */
+.hero-sky-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(8,14,28,0.75) 0%,
+    rgba(8,14,28,0.55) 22%,
+    rgba(8,14,28,0.15) 44%,
+    rgba(0,0,0,0.00)   56%);
+  z-index: 1;
+}
+
+/* Content floats in sky zone at top */
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 24px 22px 0;
+  flex: 1;
+  display: flex; flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ── TYPE ───────────────────────────────────────────────────────────────── */
+.hero-eyebrow { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(199,178,122,0.9); margin-bottom: 8px; }
+.hero-headline { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px,8vw,46px); font-weight: 300; line-height: 1.1; color: #fff; margin-bottom: 8px; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+.hero-headline em { font-style: italic; color: #C7B27A; }
+.hero-body { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.75); margin-bottom: 10px; text-shadow: 0 1px 8px rgba(0,0,0,0.6); }
+.hero-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.hero-pill { font-size: 9.5px; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.22); padding: 4px 10px; border-radius: 100px; }
+.hero-stars { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
+.hero-stars-icons { display: flex; gap: 2px; }
+.hero-stars-label { font-size: 12px; color: rgba(255,255,255,0.7); }
+.hero-stars-label strong { color: #fff; }
+.hero-cta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: var(--cta); color: #F7F5F2; border: none; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding: 17px; cursor: pointer; transition: background 0.2s; border-radius: 6px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); margin-bottom: 10px; }
+.hero-cta:hover { background: #2e3128; }
+.hero-trust { font-size: 11.5px; color: rgba(255,255,255,0.82); text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,0.9); letter-spacing: 0.02em; }
+
+/* ── DESKTOP (768px+): content left, 4:5 portrait photo right ─────────── */
+@media (min-width: 768px) {
+  #introHero.visible {
+    flex-direction: row;
+    height: auto;
+    min-height: 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Left panel: dark surface, fixed width, height driven by content */
+  .hero-content {
+    width: 420px;
+    min-width: 340px;
+    max-width: 440px;
+    flex: none;
+    justify-content: center;
+    padding: 48px 44px;
+    background: rgba(10,16,28,0.92);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-right: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    align-self: stretch;
+  }
+
+  .hero-sky-overlay { display: none; }
+
+  /* Right panel: fixed 4:5 portrait crop — couple centred */
+  .hero-img {
+    position: relative;
+    width: 360px;
+    flex: none;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 56% 68%;
+    align-self: stretch;
+  }
+
+  .hero-trust { color: rgba(255,255,255,0.55); text-shadow: none; }
+}
+
+@media (min-width: 1024px) {
+  .hero-content { width: 460px; max-width: 460px; padding: 52px 52px; }
+  .hero-img { width: 400px; }
+  .hero-headline { font-size: 46px; }
+}
+
+@media (min-width: 1280px) {
+  .hero-img { width: 440px; }
+}
+
 </style>
 </head>
 <body>
@@ -281,6 +402,31 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
   </div>
   <span class="header-badge">6 spots / month</span>
 </header>
+
+<div id="introHero">
+  <img class="hero-img" src="hero.jpg">
+  <div class="hero-sky-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Personalized Maternity Consultation</p>
+    <h1 class="hero-headline">Find your <em>perfect</em><br>session window.</h1>
+    <p class="hero-body">In 20 seconds we'll build your custom recommendation — ideal week range, booking urgency, and personalized quote.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">Pro Hair + Makeup</span>
+      <span class="hero-pill">Designer Gowns</span>
+      <span class="hero-pill">Studio &amp; Outdoors</span>
+      <span class="hero-pill">Fully Guided</span>
+    </div>
+    <div class="hero-stars">
+      <div class="hero-stars-icons"><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg></div>
+      <span class="hero-stars-label"><strong>5.0</strong> &nbsp;·&nbsp; 67 Google reviews</span>
+    </div>
+    <button class="hero-cta" onclick="startQuiz()">
+      Get My Recommendation
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="hero-trust">Takes 20 seconds &nbsp;·&nbsp; No personal information required</p>
+  </div>
+</div>
 
 <div class="progress-shell" id="progressShell" style="display:none">
   <div class="progress-row">
@@ -303,17 +449,14 @@ main { padding: 0 20px 120px; max-width: 540px; margin: 0 auto; }
 <script>
 const DEBUG = window.location.search.includes('debug=1');
 
-const MATERNITY_URL = 'https://twowildsoulsphotography.com/detroit-maternity-photographer-ads-custom';
+const MATERNITY_URL = 'https://twowildsoulsphotography.com/personalized-maternity-results';
 const NEWBORN_URL   = 'https://twowildsoulsphotography.com/detroit-newborn-photographer-ads';
 
 // ── BLACKOUT WINDOW ──────────────────────────────────────────────────────────
-// Lead photographer on leave June 1 – July 31, 2026.
-// Last available session: May 31, 2026. Back: August 1, 2026.
 const BLACKOUT_START = new Date('2026-06-01T00:00:00');
 const BLACKOUT_END   = new Date('2026-07-31T23:59:59');
 
 function isMaternityBlackout(dueDateStr) {
-  // Check if the maternity session window (weeks 28–32) overlaps with blackout
   const due = new Date(dueDateStr + 'T12:00:00');
   const conception = new Date(due.getTime() - 280 * 86400000);
   const week28 = new Date(conception.getTime() + 28 * 7 * 86400000);
@@ -322,7 +465,6 @@ function isMaternityBlackout(dueDateStr) {
 }
 
 function isNewbornBlackout(dueDateStr) {
-  // Check if newborn session window (birth + 5–14 days) overlaps with blackout
   const due = new Date(dueDateStr + 'T12:00:00');
   const nb5  = new Date(due.getTime() + 5  * 86400000);
   const nb14 = new Date(due.getTime() + 14 * 86400000);
@@ -340,27 +482,13 @@ function buildBlackoutURLs(quizData, isLateRoute) {
   const gclid  = incomingParams.get('gclid');
   const dest = isLateRoute ? NEWBORN_URL : MATERNITY_URL;
 
-  /*
-   * For each option we synthesize a due date that puts the ideal session
-   * window in the target month, so the landing page calculates correctly.
-   *
-   * Maternity: session at week 30 (midpoint of 28–32 window)
-   *   due date = target session date + (40 - 30) * 7 days = target + 70 days
-   *
-   * Newborn: birth (due date) = target newborn session date - 7 days (midpoint of 5–14)
-   *
-   * May target:    May 15, 2026
-   * August target: August 15, 2026
-   */
   function syntheticDueDate(targetDateStr, isNewborn) {
     const target = new Date(targetDateStr + 'T12:00:00');
     const MS = 86400000;
     if (isNewborn) {
-      // due date ≈ 7 days before newborn session midpoint
       const due = new Date(target.getTime() - 7 * MS);
       return due.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     } else {
-      // due date = session date + 70 days (week 30 → due date)
       const due = new Date(target.getTime() + 70 * MS);
       return due.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
@@ -371,11 +499,9 @@ function buildBlackoutURLs(quizData, isLateRoute) {
     const d = Object.assign({}, quizData, {
       blackout_note: note,
       duedate: synDue,
-      // Strip week/status so landing page recalculates from the synthetic due date
       week:   undefined,
       status: undefined
     });
-    // Clean up undefined keys
     Object.keys(d).forEach(function(k) { if (d[k] === undefined) delete d[k]; });
     const p = new URLSearchParams({ d: encodeQuizData(d) });
     if (fbclid) p.append('fbclid', fbclid);
@@ -404,7 +530,6 @@ function renderBlackout(quizData, isLateRoute) {
   const urls = buildBlackoutURLs(quizData, isLateRoute);
   const sessionType = isLateRoute ? 'newborn' : 'maternity';
 
-  // Headline and opening copy vary by session type
   const headline = isLateRoute
     ? `We're fully booked for <em>newborn sessions</em> this June & July.`
     : `We're fully booked for <em>maternity sessions</em> this June & July.`;
@@ -556,10 +681,12 @@ function calculate() {
   const dest   = isLate ? NEWBORN_URL : MATERNITY_URL;
 
   const quizData = {
-    week, status: context,
     window:  (isLate || isUrgent) ? '' : (startWeek + '-' + endWeek),
-    bookby:  bookByStr, type: isLate ? 'newborn' : 'maternity',
-    style, setting, package: pkgKey,
+    bookby:  bookByStr,
+    type:    isLate ? 'newborn' : 'maternity',
+    style,
+    setting,
+    package: pkgKey,
     duedate: formatDateStr(state.dueDate)
   };
 
@@ -587,41 +714,14 @@ function render() {
   const dotsEl  = document.getElementById('dots');
 
   if (currentStep === -1) {
+    document.getElementById('introHero').classList.add('visible');
+    content.innerHTML = '';
     shell.style.display = 'none'; nav.style.display = 'none';
-    content.innerHTML = `
-      <div class="intro-block">
-        <p class="intro-eyebrow">Personalized Maternity Consultation</p>
-        <h1 class="intro-headline">Find your <em>perfect</em><br>session window.</h1>
-        <p class="intro-body">In 20 Seconds we'll build your custom recommendation with your ideal week range, booking urgency, and quote.</p>
-        <div class="intro-pills">
-          <span class="pill">Pro Hair + Makeup</span><span class="pill">Designer Gowns</span>
-          <span class="pill">In-Studio &amp; Outdoors</span><span class="pill">Fully Guided</span>
-        </div>
-        <button class="intro-cta" onclick="startQuiz()">
-          Get My Recommendation
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <p class="intro-trust">Takes 20 seconds &nbsp;&middot;&nbsp; No personal information required</p>
-        <div class="reviews-badge">
-          <div class="reviews-stars">
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg>
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg>
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg>
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg>
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg>
-          </div>
-          <div class="reviews-meta">
-            <span class="reviews-score">5.0</span>
-            <span class="reviews-divider">&middot;</span>
-            <span class="reviews-count">67 Google reviews</span>
-          </div>
-        </div>
-      </div>
-      <div class="footer">&copy; Two Wild Souls Photography &middot; Metro Detroit</div>`;
     return;
   }
 
   if (currentStep >= TOTAL) {
+    document.getElementById('introHero').classList.remove('visible');
     shell.style.display = 'block'; nav.style.display = 'none';
     fill.style.width = '100%'; stepLbl.textContent = 'Building your results'; pctLbl.textContent = '\u2713'; dotsEl.innerHTML = '';
 
@@ -650,7 +750,7 @@ function render() {
           <div class="redirect-notice">
             <span class="redirect-notice-icon">&#x1F49B;</span>
             <h2 class="redirect-notice-title">Your maternity window has passed</h2>
-            <p class="redirect-notice-body">Based on your due date, you're at <strong>week ${week}</strong>. We stop booking maternity sessions after week 32 to keep both you and baby safe &mdash; and we need at least a week to prepare your session.</p>
+            <p class="redirect-notice-body">Based on your due date, you're at <strong>week ${week}</strong>. We stop booking maternity sessions after week 32 for baby's safety &mdash; and we need at least a week to prepare your session.</p>
             <p class="redirect-notice-body" style="margin-top:10px">But it's not too late to capture this season. We'd love to welcome your little one with a <strong>newborn portrait session</strong> instead. &hearts;</p>
           </div>
           <div class="redirect-routing">
@@ -718,6 +818,7 @@ function render() {
   }
 
   // ── QUIZ STEP ──
+  document.getElementById('introHero').classList.remove('visible');
   const step = STEPS[currentStep];
   const pct  = Math.round(((currentStep + 1) / TOTAL) * 100);
   shell.style.display = 'block'; nav.style.display = 'flex';
@@ -817,7 +918,16 @@ function goBack() {
   else { currentStep = -1; render(); }
 }
 
+// ── INIT ─────────────────────────────────────────────────────────────────────
+// If ?start=1 is present (e.g. arriving from the Showit popup),
+// skip the intro and land directly on question 1.
+const _startParams = new URLSearchParams(window.location.search);
+if (_startParams.get('start') === '1') {
+  currentStep = 0;
+  try { fbq('trackCustom', 'QuizStart', { source: 'popup' }); } catch(e) {}
+}
 render();
+// ─────────────────────────────────────────────────────────────────────────────
 
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden' && currentStep > -1 && currentStep < TOTAL) {
