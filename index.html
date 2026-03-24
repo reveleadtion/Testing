@@ -647,23 +647,30 @@ function renderBlackout(quizData, isLateRoute) {
     : `You've taken the time to find the right photographer, and that matters to us. So we want to be upfront: <strong>we're fully booked for maternity sessions in June and July</strong>. Your window deserves our full attention, and we can't give that to a session we can't take.`;
 
   // ── Personalised recommendation callout ──
+  function fmtDate(d) { return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+  function fmtDateShort(d) { return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
+
   var recCopy;
   if (isLateRoute) {
+    var windowLine = '<strong>Your ideal newborn window:</strong> ' + recInfo.windowStr;
     if (rec === 'may') {
-      recCopy = `Based on your due date, your ideal newborn window falls <strong>before the summer blackout</strong>. <strong>May is your best fit</strong> — we can have everything ready right on time.`;
+      recCopy = windowLine + '<br><br>That lands right before our summer break, which means <strong>May is your best fit</strong>. We\'ll have everything ready and waiting.';
     } else if (rec === 'august') {
-      recCopy = `Based on your due date, your ideal newborn window lands <strong>after our summer break</strong>. <strong>August is your recommended option</strong> — we'll be fully rested and ready to welcome your little one.`;
+      recCopy = windowLine + '<br><br>That falls after our summer break, so <strong>August is your recommended option</strong>. We\'ll be fully back and ready to welcome your little one.';
     } else {
-      recCopy = `Your ideal newborn window overlaps with both sides of our summer break. <strong>Either May or August can work for you</strong> — pick whichever feels right, and we'll make it happen.`;
+      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — neither May nor August will be a perfect match. May will be a little early; August a little late. Both are a compromise, and we want you to know that going in. You\'re welcome to explore either and we\'ll do everything we can to make it work.';
     }
   } else {
-    var wStr = recInfo.windowStr ? ' (your ideal window is ' + recInfo.windowStr + ')' : '';
+    var startFmt  = fmtDateShort(recInfo.startDate);
+    var endFmt    = fmtDate(recInfo.endDate);
+    var weekRange = 'weeks ' + recInfo.startWeek + '\u2013' + recInfo.endWeek;
+    var windowLine = '<strong>Your ideal maternity window:</strong> ' + startFmt + ' \u2013 ' + endFmt + ' (' + weekRange + ')';
     if (rec === 'may') {
-      recCopy = `Based on your answers, your ideal maternity window falls <strong>before our summer break</strong>${wStr}. <strong>May is your recommended option</strong> — it lines up perfectly with the timing that will make your photos look and feel exactly right.`;
+      recCopy = windowLine + '<br><br>That lines up right before our summer break, which means <strong>May is your recommended option</strong>. The timing will be exactly where it needs to be.';
     } else if (rec === 'august') {
-      recCopy = `Based on your answers, your ideal maternity window falls <strong>after our summer break</strong>${wStr}. <strong>August is your recommended option</strong> — your bump will be exactly where it needs to be, and we'll have plenty of time to plan everything together.`;
+      recCopy = windowLine + '<br><br>That falls after our summer break, so <strong>August is your recommended option</strong>. Your bump will be right where it needs to be, and we\'ll have plenty of time to plan everything together.';
     } else {
-      recCopy = `Based on your answers, your ideal maternity window${wStr} spans both sides of our summer break. <strong>Both May and August can work for you</strong> — May will be slightly earlier, August slightly fuller bump. Either way, we'll tailor the session to wherever you are.`;
+      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — which means neither May nor August will hit it perfectly. May will be a bit early; August a bit later in your pregnancy. Both are a compromise, and we\'d rather be upfront about that. You\'re welcome to explore either, and we\'ll tailor the session to wherever you are.';
     }
   }
 
