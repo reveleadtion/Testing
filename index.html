@@ -373,42 +373,102 @@ main {
 .hero-cta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: var(--cta); color: #F7F5F2; border: none; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif; font-weight: 500; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding: 17px; cursor: pointer; transition: background 0.2s; border-radius: 6px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); margin-bottom: 10px; }
 .hero-cta:hover { background: #2e3128; }
 .hero-trust { font-size: 11.5px; color: rgba(255,255,255,0.82); text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,0.9); letter-spacing: 0.02em; }
+  /* Base state — hidden everywhere by default */
+.hero-cta-fixed {
+  display: none;
+}
 
 /* ── Mobile: hide CTA + trust from hero-content, show in fixed bottom bar ── */
+/* ============================================= */
+/* HERO CTA VISIBILITY - FIXED & CLEAN           */
+/* ============================================= */
+
+/* Base state — hidden everywhere by default */
+.hero-cta-fixed {
+  display: none;
+}
+
+/* MOBILE (≤ 767px): Show fixed bottom CTA */
 @media (max-width: 767px) {
-  .hero-cta-inline { display: none; }
-  .hero-trust-inline { display: none; }
-  .hero-cta-fixed {
-    display: none; /* shown via .visible class when hero is active */
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--bg);
-    border-top: 1px solid var(--faint);
-    padding: 14px 20px max(14px, env(safe-area-inset-bottom));
-    z-index: 200;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+  .hero-cta-inline,
+  .hero-trust-inline {
+    display: none !important;
   }
-  .hero-cta-fixed.visible { display: block; }
-  .hero-cta-fixed .hero-cta {
-    box-shadow: none;
-    margin-bottom: 8px;
-  }
-  .hero-cta-fixed .hero-trust {
-    color: var(--text2);
-    text-shadow: none;
-    font-size: 11px;
-    text-align: center;
+
+  .hero-cta-fixed.visible {
+    display: block !important;
   }
 }
 
-/* ── DESKTOP (768px+): content left, 4:5 portrait photo right ─────────── */
+/* DESKTOP (≥ 768px): Hide fixed CTA, show inline CTA */
+@media (min-width: 768px) {
+  .hero-cta-fixed,
+  .hero-cta-fixed.visible {
+    display: none !important;
+  }
+
+  .hero-cta-inline,
+  .hero-trust-inline {
+    display: flex !important;
+  }
+}
+
+/* ── DESKTOP HERO LAYOUT (768px+) ─────────── */
 @media (min-width: 768px) {
   #introHero.visible {
     flex-direction: row;
     height: auto;
     min-height: 0;
     justify-content: center;
-    align-items: stretch; /* stretch the row, not each child */
+    align-items: stretch;
+  }
+  .hero-content {
+    width: 420px;
+    min-width: 340px;
+    max-width: 440px;
+    flex: none;
+    justify-content: center;
+    padding: 48px 44px;
+    background: rgba(10,16,28,0.92);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-right: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    align-self: stretch;
+  }
+  .hero-sky-overlay { display: none; }
+  .hero-img {
+    position: relative;
+    width: 360px;
+    flex: none;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 56% 68%;
+  }
+  .hero-trust { color: rgba(255,255,255,0.55); text-shadow: none; }
+}
+
+/* DESKTOP (≥ 768px): Show inline CTA, hide fixed mobile CTA */
+@media (min-width: 768px) {
+  .hero-cta-fixed,
+  .hero-cta-fixed.visible {
+    display: none !important;
+  }
+
+  .hero-cta-inline,
+  .hero-trust-inline {
+    display: flex !important;
+  }
+}
+
+/* ── DESKTOP HERO LAYOUT (768px+) ─────────── */
+@media (min-width: 768px) {
+  #introHero.visible {
+    flex-direction: row;
+    height: auto;
+    min-height: 0;
+    justify-content: center;
+    align-items: stretch;
   }
 
   .hero-content {
@@ -428,9 +488,6 @@ main {
 
   .hero-sky-overlay { display: none; }
 
-  /* FIX #3: Removed align-self:stretch from hero-img. It was overriding
-     the aspect-ratio:4/5 rule, causing the photo to stretch to match the
-     left panel height instead of holding the 4:5 portrait crop. */
   .hero-img {
     position: relative;
     width: 360px;
@@ -438,7 +495,6 @@ main {
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 56% 68%;
-    /* align-self intentionally omitted — let aspect-ratio control height */
   }
 
   .hero-trust { color: rgba(255,255,255,0.55); text-shadow: none; }
