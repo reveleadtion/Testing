@@ -94,8 +94,6 @@ main {
   max-width: 540px;
   margin: 0 auto;
   flex: 1 1 auto;
-  /* No overflow-y:auto here — let the page (window) scroll, not main.
-     This keeps window.scrollTo() working correctly. */
 }
 
 .intro-block { padding: 20px 0 6px; animation: fadeUp 0.5s ease both; }
@@ -160,10 +158,6 @@ main {
 
 .val-msg { font-size: 12px; color: var(--error); padding: 0 0 8px; display: none; }
 
-/* FIX #1: Reverted from position:sticky to position:fixed so the nav
-   actually stays pinned to the bottom of the viewport. sticky only
-   works within a scroll container with a constrained height, which
-   body/html doesn't have here. */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -295,16 +289,11 @@ main {
 @media (min-width: 600px) {
   header, .progress-shell { padding-left: 40px; padding-right: 40px; }
   main { padding: 0 40px 120px; }
-  /* FIX #2: bottom-nav is position:fixed, so centering at 900px+ uses
-     left/right margins, not transforms. At 600px we just set side padding. */
   .bottom-nav { padding: 18px 40px max(18px, env(safe-area-inset-bottom)); }
   .intro-headline { font-size: 52px; }
 }
 @media (min-width: 900px) {
-  /* Removed redundant body { display:flex } — already set in base styles */
   main { flex: 1; max-width: 600px; width: 100%; margin: 0 auto; padding: 0 0 140px; }
-  /* FIX #2 cont: position:fixed so left/right/transform work correctly
-     to centre the nav bar at desktop widths. */
   .bottom-nav {
     left: 50%;
     right: auto;
@@ -319,7 +308,6 @@ main {
 
 /* ══ HERO ═══════════════════════════════════════════════════════════════════ */
 
-/* ── MOBILE (default) ──────────────────────────────────────────────────── */
 #introHero {
   display: none;
   width: 100%;
@@ -359,7 +347,6 @@ main {
   justify-content: flex-start;
 }
 
-/* ── TYPE ───────────────────────────────────────────────────────────────── */
 .hero-eyebrow { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(199,178,122,0.9); margin-bottom: 8px; }
 .hero-headline { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px,8vw,46px); font-weight: 300; line-height: 1.1; color: #fff; margin-bottom: 8px; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
 .hero-headline em { font-style: italic; color: #C7B27A; }
@@ -374,12 +361,20 @@ main {
 .hero-cta:hover { background: #2e3128; }
 .hero-trust { font-size: 11.5px; color: rgba(255,255,255,0.82); text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,0.9); letter-spacing: 0.02em; }
 
-/* ── Mobile: hide CTA + trust from hero-content, show in fixed bottom bar ── */
+/* ── Fixed bottom CTA bar: mobile-only, hero-only ───────────────────────────
+   Default hidden always. On mobile, .visible makes it appear.
+   On desktop (768px+), forcibly hidden regardless of .visible — the inline
+   CTA inside hero-content handles desktop. This prevents the double-CTA
+   problem where both the inline and fixed bar were visible on desktop. */
+.hero-cta-fixed { display: none; }
+
 @media (max-width: 767px) {
-  .hero-cta-inline { display: none; }
+  /* Hide the inline CTA/trust inside hero-content on mobile */
+  .hero-cta-inline  { display: none; }
   .hero-trust-inline { display: none; }
+
+  /* Show the fixed bar on mobile when hero is active */
   .hero-cta-fixed {
-    display: none; /* shown via .visible class when hero is active */
     position: fixed;
     bottom: 0; left: 0; right: 0;
     background: var(--bg);
@@ -389,10 +384,7 @@ main {
     box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
   }
   .hero-cta-fixed.visible { display: block; }
-  .hero-cta-fixed .hero-cta {
-    box-shadow: none;
-    margin-bottom: 8px;
-  }
+  .hero-cta-fixed .hero-cta { box-shadow: none; margin-bottom: 8px; }
   .hero-cta-fixed .hero-trust {
     color: var(--text2);
     text-shadow: none;
@@ -401,14 +393,17 @@ main {
   }
 }
 
-/* ── DESKTOP (768px+): content left, 4:5 portrait photo right ─────────── */
+/* On desktop, always hide the fixed bar — even if JS adds .visible */
 @media (min-width: 768px) {
+  .hero-cta-fixed,
+  .hero-cta-fixed.visible { display: none !important; }
+
   #introHero.visible {
     flex-direction: row;
     height: auto;
     min-height: 0;
     justify-content: center;
-    align-items: stretch; /* stretch the row, not each child */
+    align-items: stretch;
   }
 
   .hero-content {
@@ -428,9 +423,6 @@ main {
 
   .hero-sky-overlay { display: none; }
 
-  /* FIX #3: Removed align-self:stretch from hero-img. It was overriding
-     the aspect-ratio:4/5 rule, causing the photo to stretch to match the
-     left panel height instead of holding the 4:5 portrait crop. */
   .hero-img {
     position: relative;
     width: 360px;
@@ -438,7 +430,6 @@ main {
     aspect-ratio: 4 / 5;
     object-fit: cover;
     object-position: 56% 68%;
-    /* align-self intentionally omitted — let aspect-ratio control height */
   }
 
   .hero-trust { color: rgba(255,255,255,0.55); text-shadow: none; }
@@ -461,16 +452,12 @@ main {
 <header>
   <div class="logo-wrap">
     <span class="logo-name">Two Wild <em>Souls</em> Photography</span>
-    <!-- FIX #4: Restored logo-sub subtitle that was dropped from the header HTML -->
     <span class="logo-sub">Metro Detroit Maternity Portraits</span>
   </div>
   <span class="header-badge">6 spots / month</span>
 </header>
 
 <div id="introHero">
-  <!-- FIX #5: src corrected to hero.jpeg — deploy this file as exactly
-       hero.jpeg (lowercase, .jpeg extension) in the same directory.
-       Vercel/Linux are case-sensitive; a mismatch will 404. -->
   <img class="hero-img" src="hero.jpeg" alt="Maternity portrait by Two Wild Souls Photography">
   <div class="hero-sky-overlay"></div>
   <div class="hero-content">
@@ -487,6 +474,7 @@ main {
       <div class="hero-stars-icons"><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg></div>
       <span class="hero-stars-label"><strong>5.0</strong> &nbsp;·&nbsp; 67 Google reviews</span>
     </div>
+    <!-- Desktop: inline CTA inside hero-content panel -->
     <button class="hero-cta hero-cta-inline" onclick="startQuiz()">
       Get My Recommendation
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -495,7 +483,7 @@ main {
   </div>
 </div>
 
-<!-- Mobile-only fixed bottom CTA (replaces the in-hero button on small screens) -->
+<!-- Mobile-only fixed bottom CTA (shown only when hero is active on small screens) -->
 <div class="hero-cta-fixed" id="heroCtaFixed">
   <button class="hero-cta" onclick="startQuiz()">
     Get My Recommendation
@@ -528,7 +516,6 @@ const DEBUG = window.location.search.includes('debug=1');
 const MATERNITY_URL = 'https://twowildsoulsphotography.com/personalized-maternity-results';
 const NEWBORN_URL   = 'https://twowildsoulsphotography.com/detroit-newborn-photographer-ads';
 
-// ── BLACKOUT WINDOW ──────────────────────────────────────────────────────────
 const BLACKOUT_START = new Date('2026-06-01T00:00:00');
 const BLACKOUT_END   = new Date('2026-07-31T23:59:59');
 
@@ -591,28 +578,22 @@ function buildBlackoutURLs(quizData, isLateRoute) {
   };
 }
 
-// ── BLACKOUT WINDOW RECOMMENDATION ──────────────────────────────────────────
-// Returns { windowStr, idealDate, recommendation: 'may'|'august'|'either' }
-// based on the user's quiz answers and whether this is a newborn route.
 function getBlackoutRecommendation(dueDateStr, isLateRoute) {
   var due = new Date(dueDateStr + 'T12:00:00');
   var conception = new Date(due.getTime() - 280 * 86400000);
 
   if (isLateRoute) {
-    // Newborn: ideal window is 5–14 days after birth (due date proxy)
     var nb5  = new Date(due.getTime() + 5  * 86400000);
     var nb14 = new Date(due.getTime() + 14 * 86400000);
     var mayEnd    = new Date('2026-05-31T23:59:59');
     var augStart  = new Date('2026-08-01T00:00:00');
-    // If ideal window mid-point falls before June → May; if after July → August
     var midPoint = new Date((nb5.getTime() + nb14.getTime()) / 2);
     var rec = midPoint < mayEnd ? 'may' : (midPoint >= augStart ? 'august' : 'either');
     var windowStr = nb5.toLocaleDateString('en-US',{month:'short',day:'numeric'})
-      + ' – ' + nb14.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      + ' \u2013 ' + nb14.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
     return { windowStr: windowStr, rec: rec };
   }
 
-  // Maternity: replicate calculate() window logic from quiz answers
   var isFirst   = state.firstBaby === 'yes';
   var multiples = state.multiples === 'yes';
   var style     = state.style || 'full';
@@ -629,29 +610,23 @@ function getBlackoutRecommendation(dueDateStr, isLateRoute) {
   endWeek   = Math.min(endWeek, 32);
   startWeek = Math.min(startWeek, 32);
 
-  // Map week range to calendar dates
   var startDate = new Date(conception.getTime() + startWeek * 7 * 86400000);
   var endDate   = new Date(conception.getTime() + endWeek   * 7 * 86400000);
-  var windowStr = 'weeks ' + startWeek + '–' + endWeek + ' ('
-    + startDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})
-    + ' – '
-    + endDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ')';
 
   var mayEnd   = new Date('2026-05-31T23:59:59');
   var augStart = new Date('2026-08-01T00:00:00');
-  var blackoutStart = BLACKOUT_START;
-  var blackoutEnd   = BLACKOUT_END;
-
-  // Does the window overlap with May (before blackout)?
   var inMay    = startDate <= mayEnd;
-  // Does the window overlap with August (after blackout)?
   var inAug    = endDate >= augStart;
 
   var rec;
   if (inMay && !inAug)       rec = 'may';
   else if (inAug && !inMay)  rec = 'august';
-  else if (inMay && inAug)   rec = 'either';
-  else                       rec = 'either'; // window falls entirely in blackout — both are alternatives
+  else                       rec = 'either';
+
+  var windowStr = 'weeks ' + startWeek + '\u2013' + endWeek + ' ('
+    + startDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+    + ' \u2013 '
+    + endDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ')';
 
   return { windowStr: windowStr, startWeek: startWeek, endWeek: endWeek, startDate: startDate, endDate: endDate, rec: rec };
 }
@@ -670,9 +645,8 @@ function renderBlackout(quizData, isLateRoute) {
 
   const urls = buildBlackoutURLs(quizData, isLateRoute);
   const sessionType = isLateRoute ? 'newborn' : 'maternity';
-
   const recInfo = getBlackoutRecommendation(state.dueDate, isLateRoute);
-  const rec = recInfo.rec; // 'may' | 'august' | 'either'
+  const rec = recInfo.rec;
 
   const headline = isLateRoute
     ? `We're fully booked for <em>newborn sessions</em> this June & July.`
@@ -682,7 +656,6 @@ function renderBlackout(quizData, isLateRoute) {
     ? `We know how much it means to have those first days with your baby captured, the tiny curled fingers, the way they sleep on your chest. That's exactly why we want to be honest with you: <strong>we're fully booked for newborn sessions in June and July</strong>, and we'd rather tell you now than have you counting on us.`
     : `You've taken the time to find the right photographer, and that matters to us. So we want to be upfront: <strong>we're fully booked for maternity sessions in June and July</strong>. Your window deserves our full attention, and we can't give that to a session we can't take.`;
 
-  // ── Personalised recommendation callout ──
   function fmtDate(d) { return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
   function fmtDateShort(d) { return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
 
@@ -694,7 +667,7 @@ function renderBlackout(quizData, isLateRoute) {
     } else if (rec === 'august') {
       recCopy = windowLine + '<br><br>That falls after our summer break, so <strong>August is your recommended option</strong>. We\'ll be fully back and ready to welcome your little one.';
     } else {
-      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — neither May nor August will be a perfect match. May will be a little early; August a little late. Both are a compromise, and we want you to know that going in. You\'re welcome to explore either and we\'ll do everything we can to make it work.';
+      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — neither May nor August will be a perfect match. Both are a compromise, and we want you to know that going in.';
     }
   } else {
     var startFmt  = fmtDateShort(recInfo.startDate);
@@ -706,26 +679,23 @@ function renderBlackout(quizData, isLateRoute) {
     } else if (rec === 'august') {
       recCopy = windowLine + '<br><br>That falls after our summer break, so <strong>August is your recommended option</strong>. Your bump will be right where it needs to be, and we\'ll have plenty of time to plan everything together.';
     } else {
-      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — which means neither May nor August will hit it perfectly. May will be a bit early; August a bit later in your pregnancy. Both are a compromise, and we\'d rather be upfront about that. You\'re welcome to explore either, and we\'ll tailor the session to wherever you are.';
+      recCopy = windowLine + '<br><br>Honestly, that window falls right in the middle of our summer break — which means neither May nor August will hit it perfectly. Both are a compromise, and we\'d rather be upfront about that.';
     }
   }
 
-  const mayTitle   = isLateRoute ? 'Newborn session in May' : 'Maternity session in May';
-  const augTitle   = isLateRoute ? 'Newborn session in August' : 'Maternity session in August';
-
-  const mayBody = isLateRoute
+  const mayTitle = isLateRoute ? 'Newborn session in May' : 'Maternity session in May';
+  const augTitle = isLateRoute ? 'Newborn session in August' : 'Maternity session in August';
+  const mayBody  = isLateRoute
     ? `If your due date shifts or baby arrives a bit early, we'll have everything ready. We hold your spot as soon as you reserve a date, no waiting, no scrambling.`
     : `If your session window falls at the earlier end of your range, May can work! Same full experience — hair, makeup, gowns, everything. Just before the summer rush.`;
-
-  const augBody = isLateRoute
+  const augBody  = isLateRoute
     ? `If your baby arrives in August or later, we'd love nothing more than to be your first call.`
     : `We have a few spots left in August. Your session gets planned for your ideal window, unhurried, fully prepared, and completely yours.`;
 
-  // Badge shown on the recommended card
-  const mayLabel  = rec === 'may'    ? '✓ Your Recommended Window &mdash; May'    : 'Available Now &mdash; May';
-  const augLabel  = rec === 'august' ? '✓ Your Recommended Window &mdash; August' : 'Available &mdash; August onward';
-  const mayClass  = rec === 'may'    ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
-  const augClass  = rec === 'august' ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
+  const mayLabel = rec === 'may'    ? '\u2713 Your Recommended Window &mdash; May'    : 'Available Now &mdash; May';
+  const augLabel = rec === 'august' ? '\u2713 Your Recommended Window &mdash; August' : 'Available &mdash; August onward';
+  const mayClass = rec === 'may'    ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
+  const augClass = rec === 'august' ? 'blackout-opt blackout-opt--recommended' : 'blackout-opt';
 
   try { fbq('trackCustom', 'BlackoutShown', { session_type: sessionType, recommendation: rec }); } catch(e) {}
 
@@ -758,8 +728,6 @@ function renderBlackout(quizData, isLateRoute) {
       </p>
     </div>`;
 }
-
-// ── REST OF QUIZ ─────────────────────────────────────────────────────────────
 
 const PACKAGES = {
   portraits:  { name: 'Portraits of Just Mom',  tagline: 'Intimate \u00b7 Studio Only \u00b7 All About You',           emoji: '\uD83E\uDD0D' },
@@ -815,11 +783,7 @@ function currentPregnancyWeek(dueDateStr) {
   return Math.max(1, Math.min(42, Math.ceil(daysSince / 7)));
 }
 
-// FIX #3 cont: scrollToTop scrolls window (not main), which works correctly
-// now that main has no overflow-y:auto.
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
 function calculate() {
   const isFirst   = state.firstBaby === 'yes';
@@ -903,15 +867,14 @@ function render() {
 
   if (currentStep >= TOTAL) {
     document.getElementById('introHero').classList.remove('visible');
+    document.getElementById('heroCtaFixed').classList.remove('visible');
     shell.style.display = 'block'; nav.style.display = 'none';
     fill.style.width = '100%'; stepLbl.textContent = 'Building your results'; pctLbl.textContent = '\u2713'; dotsEl.innerHTML = '';
 
     const { dest, finalParams, pkgKey, quizData, isLate } = calculate();
 
-    // ── BLACKOUT CHECK ──────────────────────────────────────────────────────
     const blackoutType = getBlackoutType(state.dueDate, isLate);
     if (blackoutType) { renderBlackout(quizData, isLate); return; }
-    // ────────────────────────────────────────────────────────────────────────
 
     const pkg      = PACKAGES[pkgKey];
     const week     = quizData.week;
@@ -1101,14 +1064,12 @@ function goBack() {
   else { currentStep = -1; render(); }
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
 const _startParams = new URLSearchParams(window.location.search);
 if (_startParams.get('start') === '1') {
   currentStep = 0;
   try { fbq('trackCustom', 'QuizStart', { source: 'popup' }); } catch(e) {}
 }
 render();
-// ─────────────────────────────────────────────────────────────────────────────
 
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden' && currentStep > -1 && currentStep < TOTAL) {
