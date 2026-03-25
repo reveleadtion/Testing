@@ -374,6 +374,33 @@ main {
 .hero-cta:hover { background: #2e3128; }
 .hero-trust { font-size: 11.5px; color: rgba(255,255,255,0.82); text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,0.9); letter-spacing: 0.02em; }
 
+/* ── Mobile: hide CTA + trust from hero-content, show in fixed bottom bar ── */
+@media (max-width: 767px) {
+  .hero-cta-inline { display: none; }
+  .hero-trust-inline { display: none; }
+  .hero-cta-fixed {
+    display: none; /* shown via .visible class when hero is active */
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--faint);
+    padding: 14px 20px max(14px, env(safe-area-inset-bottom));
+    z-index: 200;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+  }
+  .hero-cta-fixed.visible { display: block; }
+  .hero-cta-fixed .hero-cta {
+    box-shadow: none;
+    margin-bottom: 8px;
+  }
+  .hero-cta-fixed .hero-trust {
+    color: var(--text2);
+    text-shadow: none;
+    font-size: 11px;
+    text-align: center;
+  }
+}
+
 /* ── DESKTOP (768px+): content left, 4:5 portrait photo right ─────────── */
 @media (min-width: 768px) {
   #introHero.visible {
@@ -460,12 +487,21 @@ main {
       <div class="hero-stars-icons"><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg><svg width="13" height="13" viewBox="0 0 20 20" fill="#FBBC04"><path d="M10 1l2.39 4.84 5.34.78-3.86 3.76.91 5.32L10 13.27l-4.78 2.51.91-5.32L2.27 6.62l5.34-.78z"/></svg></div>
       <span class="hero-stars-label"><strong>5.0</strong> &nbsp;·&nbsp; 67 Google reviews</span>
     </div>
-    <button class="hero-cta" onclick="startQuiz()">
+    <button class="hero-cta hero-cta-inline" onclick="startQuiz()">
       Get My Recommendation
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <p class="hero-trust">Takes 20 seconds &nbsp;·&nbsp; No personal information</p>
+    <p class="hero-trust hero-trust-inline">Takes 20 seconds &nbsp;·&nbsp; No personal information</p>
   </div>
+</div>
+
+<!-- Mobile-only fixed bottom CTA (replaces the in-hero button on small screens) -->
+<div class="hero-cta-fixed" id="heroCtaFixed">
+  <button class="hero-cta" onclick="startQuiz()">
+    Get My Recommendation
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <p class="hero-trust">Takes 20 seconds &nbsp;·&nbsp; No personal information</p>
 </div>
 
 <div class="progress-shell" id="progressShell" style="display:none">
@@ -859,6 +895,7 @@ function render() {
 
   if (currentStep === -1) {
     document.getElementById('introHero').classList.add('visible');
+    document.getElementById('heroCtaFixed').classList.add('visible');
     content.innerHTML = '';
     shell.style.display = 'none'; nav.style.display = 'none';
     return;
@@ -963,6 +1000,7 @@ function render() {
 
   // ── QUIZ STEP ──
   document.getElementById('introHero').classList.remove('visible');
+  document.getElementById('heroCtaFixed').classList.remove('visible');
   const step = STEPS[currentStep];
   const pct  = Math.round(((currentStep + 1) / TOTAL) * 100);
   shell.style.display = 'block'; nav.style.display = 'flex';
@@ -1023,6 +1061,7 @@ function render() {
 
 function startQuiz() {
   try { fbq('trackCustom', 'QuizStart', {}); } catch(e) {}
+  document.getElementById('heroCtaFixed').classList.remove('visible');
   currentStep = 0; render(); scrollToTop();
 }
 function handleDateChange() {
